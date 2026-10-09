@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "core-server/internal/rpc/userpb;userpb";
+
+message UserInfo {
+  uint64 id = 1;
+  string username = 2;
+  string email = 3;
+  string phone = 4;
+  string avatar = 5;
+  string sex = 6;
+  string birthday = 7;
+  string signature = 8;
+  string role = 9;
+  string status = 10;
+}
+
+message GetProfileRequest {
+  uint64 user_id = 1;
+}
+
+message GetProfileResponse {
+  uint64 id = 1;
+  string username = 2;
+  string email = 3;
+  string phone = 4;
+  string avatar = 5;
+  string sex = 6;
+  string birthday = 7;
+  string role = 8;
+  string status = 9;
+
+  uint64 followers_count = 10;
+  uint64 following_count = 11;
+  uint64 like_count = 12;
+  uint64 receive_like_count = 13;
+  uint64 favor_count = 14;
+  uint64 receive_favor_count = 15;
+  uint64 article_count = 16;
+  string signature = 17;
+  uint64 view_count = 18;
+  uint64 comment_count = 19;
+}
+
+message UpdateProfileRequest {
+  uint64 user_id = 1;
+  string username = 2;
+  string phone = 3;
+  string sex = 4;
+  string birthday = 5;
+  string signature = 6;
+}
+
+message UpdateProfileResponse {
+  bool success = 1;
+}
+
+message UpdateAvatarRequest {
+  uint64 user_id = 1;
+  string avatar = 2;
+}
+
+message UpdateAvatarResponse {
+  string url = 1;
+}
+
+message ListUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListUsersResponse {
+  repeated UserInfo users = 1;
+  uint64 total = 2;
+}
+
+message SearchUsersRequest {
+  string keyword = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message SearchUsersResponse {
+  repeated UserInfo users = 1;
+  uint64 total = 2;
+}
+
+message UpdateUserStatusRequest {
+  uint64 user_id = 1;
+  string status = 2;
+}
+
+message UpdateUserStatusResponse {
+  bool success = 1;
+}
+
+service UserService {
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse);
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc UpdateAvatar(UpdateAvatarRequest) returns (UpdateAvatarResponse);
+  rpc UpdateUserStatus(UpdateUserStatusRequest) returns (UpdateUserStatusResponse);
+}
