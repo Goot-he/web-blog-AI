@@ -18,7 +18,7 @@ func NewArticleRpc(newArticleService application.ArticleService) *ArticleRpc {
 	}
 }
 
-func (r *ArticleRpc) CreateArticle(ctx *context.Context, req *articlepb.CreateArticleRequest) (*articlepb.CreateArticleResponse, error) {
+func (r *ArticleRpc) CreateArticle(ctx context.Context, req *articlepb.CreateArticleRequest) (*articlepb.CreateArticleResponse, error) {
 	//调用application层函数
 	err := r.articleService.CreateArticle(ctx, dto.CreateArticleRequest{
 		Title:       req.Title,
@@ -38,7 +38,7 @@ func (r *ArticleRpc) CreateArticle(ctx *context.Context, req *articlepb.CreateAr
 	}, nil
 }
 
-func (r *ArticleRpc) EditorArticle(ctx *context.Context, req *articlepb.EditorArticleRequest) (*articlepb.EditorArticleResponse, error) {
+func (r *ArticleRpc) EditorArticle(ctx context.Context, req *articlepb.EditorArticleRequest) (*articlepb.EditorArticleResponse, error) {
 	err := r.articleService.EditorArticle(ctx, dto.EditorArticleRequest{
 		ID:          req.Id,
 		Title:       req.Title,
@@ -58,7 +58,7 @@ func (r *ArticleRpc) EditorArticle(ctx *context.Context, req *articlepb.EditorAr
 	}, nil
 }
 
-func (r *ArticleRpc) DeleteArticle(ctx *context.Context, req *articlepb.DeleteArticleRequest) (*articlepb.DeleteArticleResponse, error) {
+func (r *ArticleRpc) DeleteArticle(ctx context.Context, req *articlepb.DeleteArticleRequest) (*articlepb.DeleteArticleResponse, error) {
 	err := r.articleService.DeleteArticle(ctx, dto.DeleteArticleRequest{
 		ID:     req.Id,
 		UserID: req.UserID,
@@ -71,7 +71,7 @@ func (r *ArticleRpc) DeleteArticle(ctx *context.Context, req *articlepb.DeleteAr
 	}, nil
 }
 
-func (r *ArticleRpc) PublishDraft(ctx *context.Context, req *articlepb.PublishDraftRequest) (*articlepb.PublishDraftResponse, error) {
+func (r *ArticleRpc) PublishDraft(ctx context.Context, req *articlepb.PublishDraftRequest) (*articlepb.PublishDraftResponse, error) {
 	err := r.articleService.PublishDraft(ctx, dto.PublishDraftRequest{
 		ID:     req.Id,
 		UserID: req.AuthorID,
@@ -84,7 +84,7 @@ func (r *ArticleRpc) PublishDraft(ctx *context.Context, req *articlepb.PublishDr
 	}, nil
 }
 
-func (r *ArticleRpc) DeleteDraft(ctx *context.Context, req *articlepb.DeleteDraftRequest) (*articlepb.DeleteDraftResponse, error) {
+func (r *ArticleRpc) DeleteDraft(ctx context.Context, req *articlepb.DeleteDraftRequest) (*articlepb.DeleteDraftResponse, error) {
 	err := r.articleService.DeleteDraft(ctx, dto.DeleteDraftRequest{
 		ID:     req.Id,
 		UserID: req.AuthorID,
@@ -97,7 +97,7 @@ func (r *ArticleRpc) DeleteDraft(ctx *context.Context, req *articlepb.DeleteDraf
 	}, nil
 }
 
-func (r *ArticleRpc) GetArticle(ctx *context.Context, req *articlepb.GetArticleRequest) (*articlepb.GetArticleResponse, error) {
+func (r *ArticleRpc) GetArticle(ctx context.Context, req *articlepb.GetArticleRequest) (*articlepb.GetArticleResponse, error) {
 	resp, err := r.articleService.GetArticle(ctx, dto.GetArticleRequest{
 		ID: req.Id,
 	})
@@ -117,19 +117,19 @@ func (r *ArticleRpc) GetArticle(ctx *context.Context, req *articlepb.GetArticleR
 	return article, nil
 }
 
-func (r *ArticleRpc) ListArticles(ctx *context.Context, req *articlepb.ListArticlesRequest) (*articlepb.ListArticlesResponse, error) {
+func (r *ArticleRpc) ListArticles(ctx context.Context, req *articlepb.ListArticlesRequest) (*articlepb.ListArticlesResponse, error) {
 }
 
-func (r *ArticleRpc) ListMyArticles(ctx *context.Context, req *articlepb.ListMyArticlesRequest) (*articlepb.ListMyArticlesResponse, error) {
+func (r *ArticleRpc) ListMyArticles(ctx context.Context, req *articlepb.ListMyArticlesRequest) (*articlepb.ListMyArticlesResponse, error) {
 }
 
-func (r *ArticleRpc) ListUserArticles(ctx *context.Context, req *articlepb.ListUserArticlesRequest) (*articlepb.ListUserArticlesResponse, error) {
+func (r *ArticleRpc) ListUserArticles(ctx context.Context, req *articlepb.ListUserArticlesRequest) (*articlepb.ListUserArticlesResponse, error) {
 }
 
-func (r *ArticleRpc) ListByCategory(ctx *context.Context, req *articlepb.ListByCategoryRequest) (*articlepb.ListByCategoryResponse, error) {
+func (r *ArticleRpc) ListByCategory(ctx context.Context, req *articlepb.ListByCategoryRequest) (*articlepb.ListByCategoryResponse, error) {
 }
 
-func (r *ArticleRpc) SearchArticles(ctx *context.Context, req *articlepb.SearchArticlesRequest) (*articlepb.SearchArticlesResponse, error) {
+func (r *ArticleRpc) SearchArticles(ctx context.Context, req *articlepb.SearchArticlesRequest) (*articlepb.SearchArticlesResponse, error) {
 }
 
 func DtoToPB(msg dto.ArticleMsg) *articlepb.GetArticleResponse {

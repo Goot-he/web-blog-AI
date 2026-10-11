@@ -136,6 +136,53 @@ func ToArticleResponse(a *aggregate.ArticleAggregate) *ArticleMsg {
 	}
 
 	if a.Author != nil {
-		article.AuthorName = a.Author
+	}
+	if a.Category != nil {
+	}
+
+	return article
+}
+
+func ToArticlesResponse(articles []*aggregate.ArticleAggregate) []*ArticleMsg {
+	var articleMsgs []*ArticleMsg
+	for _, article := range articles {
+		articleMsgs = append(articleMsgs, ToArticleResponse(article))
+	}
+	return articleMsgs
+}
+
+func ToGetArticleResponse(article *aggregate.ArticleAggregate) *GetArticleResponse {
+	return &GetArticleResponse{
+		ArticleMsg: ToArticleResponse(article),
+	}
+}
+
+func ToListArticlesResponse(articles []*aggregate.ArticleAggregate) *ListArticlesResponse {
+	return &ListArticlesResponse{
+		Articles: ToArticlesResponse(articles),
+	}
+}
+
+func ToListMyArticlesResponse(articles []*aggregate.ArticleAggregate) *ListMyArticlesResponse {
+	return &ListMyArticlesResponse{
+		Articles: ToArticlesResponse(articles),
+	}
+}
+
+func ToListByCategoryResponse(articles []*aggregate.ArticleAggregate) *ListByCategoryResponse {
+	return &ListByCategoryResponse{
+		Articles: ToArticlesResponse(articles),
+	}
+}
+
+func ToListUserArticlesResponse(articles []*aggregate.ArticleAggregate) *ListUserArticlesResponse {
+	return &ListUserArticlesResponse{
+		Articles: ToArticlesResponse(articles),
+	}
+}
+
+func ToSearchArticlesResponse(articles []*aggregate.ArticleAggregate) *SearchArticlesResponse {
+	return &SearchArticlesResponse{
+		Articles: ToArticlesResponse(articles),
 	}
 }
