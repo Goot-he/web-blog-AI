@@ -69,7 +69,7 @@ func (_c *InteractionCountCreate) SetObjectType(v interaction_count.ObjectType) 
 }
 
 // SetObjectID sets the "object_id" field.
-func (_c *InteractionCountCreate) SetObjectID(v string) *InteractionCountCreate {
+func (_c *InteractionCountCreate) SetObjectID(v uint64) *InteractionCountCreate {
 	_c.mutation.SetObjectID(v)
 	return _c
 }
@@ -150,10 +150,6 @@ func (_c *InteractionCountCreate) defaults() {
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := interaction_count.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := interaction_count.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
 	}
 	if _, ok := _c.mutation.InteractionType(); !ok {
 		v := interaction_count.DefaultInteractionType
@@ -241,7 +237,7 @@ func (_c *InteractionCountCreate) createSpec() (*Interaction_count, *sqlgraph.Cr
 		_node.ObjectType = value
 	}
 	if value, ok := _c.mutation.ObjectID(); ok {
-		_spec.SetField(interaction_count.FieldObjectID, field.TypeString, value)
+		_spec.SetField(interaction_count.FieldObjectID, field.TypeUint64, value)
 		_node.ObjectID = value
 	}
 	if value, ok := _c.mutation.InteractionType(); ok {

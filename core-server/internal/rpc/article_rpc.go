@@ -104,47 +104,125 @@ func (r *ArticleRpc) GetArticle(ctx context.Context, req *articlepb.GetArticleRe
 	if err != nil {
 		return nil, err
 	}
-	article := DtoToPB(dto.ArticleMsg{
-		Title:       resp.Title,
-		Summary:     resp.Summary,
-		Content:     resp.Content,
-		CoverImage:  resp.CoverImage,
-		AuthorID:    resp.AuthorID,
-		CategoryID:  resp.CategoryID,
-		IsTop:       resp.IsTop,
-		IsPublished: resp.IsPublished,
-	})
-	return article, nil
+
+	return &articlepb.GetArticleResponse{
+		Id:           resp.ID,
+		Title:        resp.Title,
+		Summary:      resp.Summary,
+		Content:      resp.Content,
+		CoverImage:   resp.CoverImage,
+		AuthorID:     resp.AuthorID,
+		CategoryID:   resp.CategoryID,
+		IsTop:        resp.IsTop,
+		IsPublished:  resp.IsPublished,
+		ViewCount:    resp.ViewCount,
+		LikeCount:    resp.LikeCount,
+		CommentCount: resp.CommentCount,
+		CreatedAt:    uint64(resp.CreatedAt.Unix()),
+		UpdatedAt:    uint64(resp.UpdatedAt.Unix()),
+		PublishedAt:  uint64(resp.PublishedAt.Unix()),
+		AuthorName:   resp.AuthorName,
+		AuthorAvatar: resp.AuthorAvatar,
+		FavorCount:   resp.FavorCount,
+	}, nil
 }
 
 func (r *ArticleRpc) ListArticles(ctx context.Context, req *articlepb.ListArticlesRequest) (*articlepb.ListArticlesResponse, error) {
+	resp, err := r.articleService.ListArticles(ctx, dto.ListArticlesRequest{
+		Page: req.Page,
+		Size: req.PageSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &articlepb.ListArticlesResponse{
+		Articles: toArticlePBList(resp.Articles),
+	}, nil
 }
 
 func (r *ArticleRpc) ListMyArticles(ctx context.Context, req *articlepb.ListMyArticlesRequest) (*articlepb.ListMyArticlesResponse, error) {
+	resp, err := r.articleService.ListMyArticles(ctx, dto.ListMyArticlesRequest{
+		Page: req.Page,
+		Size: req.PageSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &articlepb.ListMyArticlesResponse{
+		Articles: toArticlePBList(resp.Articles),
+	}, nil
 }
 
 func (r *ArticleRpc) ListUserArticles(ctx context.Context, req *articlepb.ListUserArticlesRequest) (*articlepb.ListUserArticlesResponse, error) {
+	resp, err := r.articleService.ListUserArticles(ctx, dto.ListUserArticlesRequest{
+		Page:   req.Page,
+		Size:   req.PageSize,
+		UserID: req.AuthorID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &articlepb.ListUserArticlesResponse{Articles: toArticlePBList(resp.Articles)}, nil
 }
 
 func (r *ArticleRpc) ListByCategory(ctx context.Context, req *articlepb.ListByCategoryRequest) (*articlepb.ListByCategoryResponse, error) {
+	resp, err := r.articleService.ListByCategory(ctx, dto.ListByCategoryRequest{
+		CategoryID: req.CategoryID,
+		Page:       req.Page,
+		Size:       req.PageSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &articlepb.ListByCategoryResponse{Articles: toArticlePBList(resp.Articles)}, nil
 }
 
 func (r *ArticleRpc) SearchArticles(ctx context.Context, req *articlepb.SearchArticlesRequest) (*articlepb.SearchArticlesResponse, error) {
-}
-
-func DtoToPB(msg dto.ArticleMsg) *articlepb.GetArticleResponse {
-	return &articlepb.GetArticleResponse{
-		Title:       msg.Title,
-		Summary:     msg.Summary,
-		Content:     msg.Content,
-		CoverImage:  msg.CoverImage,
-		AuthorID:    msg.AuthorID,
-		CategoryID:  msg.CategoryID,
-		IsTop:       msg.IsTop,
-		IsPublished: msg.IsPublished,
+	resp, err := r.articleService.SearchArticles(ctx, dto.SearchArticlesRequest{
+		Keywords: req.Q,
+		Page:     req.Page,
+		Size:     req.PageSize,
+	})
+	if err != nil {
+		return nil, err
 	}
+	return &articlepb.SearchArticlesResponse{Articles: toArticlePBList(resp.Articles)}, nil
 }
 
-func DtoToPBs() {
+func toArticlePBList(aggregates []*dto.ArticleMsg) []*articlepb.Article {
+	if len(aggregates) == 0 {
+		return nil
+	}
+	items := make([]*articlepb.Article, 0, len(aggregates))
+	for _, item := range aggregates {
+		items = append(items, toArticlePB(item))
+	}
+	return items
+}
 
+func toArticlePB(a *dto.ArticleMsg) *articlepb.Article {
+	if a == nil {
+		return nil
+	}
+	pb := &articlepb.Article{
+		Id:           a.ID,
+		AuthorID:     a.AuthorID,
+		Title:        a.Title,
+		Content:      a.Content,
+		Summary:      a.Summary,
+		CategoryID:   a.CategoryID,
+		IsTop:        a.IsTop,
+		CoverImage:   a.CoverImage,
+		IsPublished:  a.IsPublished,
+		ViewCount:    a.ViewCount,
+		LikeCount:    a.LikeCount,
+		FavorCount:   a.FavorCount,
+		CommentCount: a.CommentCount,
+		CreatedAt:    uint64(a.CreatedAt.Unix()),
+		UpdatedAt:    uint64(a.UpdatedAt.Unix()),
+		PublishedAt:  uint64(a.PublishedAt.Unix()),
+	}
+	pb.AuthorName = a.AuthorName
+	pb.AuthorAvatar = a.AuthorAvatar
+	return pb
 }

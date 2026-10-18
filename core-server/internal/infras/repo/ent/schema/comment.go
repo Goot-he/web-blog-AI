@@ -20,13 +20,14 @@ func (Comment) Fields() []ent.Field {
 		field.Uint64("id").Comment("评论编号"),
 		field.Time("created_at").Default(time.Now).Comment("创建时间"),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Default(time.Now).Comment("删除时间"),
+		field.Time("deleted_at").Optional().Nillable().Comment("删除时间"),
 
 		field.Uint64("article_id").Comment("评论所属文章ID"),
 		field.Uint64("publish_user_id").Comment("发布评论的用户ID"),
 		field.Uint64("root_id").Optional().Default(0).Comment("根评论ID"),
 		field.Uint64("reply_id").Optional().Default(0).Comment("回复的评论ID"),
 		field.Uint64("reply_user_id").Optional().Default(0).Comment("回复的用户的ID"),
+		field.String("content").Comment("评论内容"),
 		field.Uint64("like_count").Default(0).Comment("评论点赞量"),
 		field.Uint64("child_count").Default(0).Comment("评论下的子评论数量"),
 	}

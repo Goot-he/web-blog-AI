@@ -136,8 +136,11 @@ func ToArticleResponse(a *aggregate.ArticleAggregate) *ArticleMsg {
 	}
 
 	if a.Author != nil {
+		article.AuthorName = a.Author.Username
+		article.AuthorAvatar = a.Author.Avatar
 	}
 	if a.Category != nil {
+		article.CategoryName = a.Category.Category
 	}
 
 	return article

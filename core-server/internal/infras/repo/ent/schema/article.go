@@ -20,8 +20,10 @@ func (Article) Fields() []ent.Field {
 		field.Uint64("id").Comment("文章编号"),
 		field.Time("created_at").Default(time.Now).Comment("创建时间"),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Default(time.Now).Comment("删除时间 假删除"),
-		field.Time("published_at").Optional().Nillable().Default(time.Now).UpdateDefault(time.Now).Comment("发布时间 为nil表示未发布"),
+		// 软删除字段不能给默认值 否则新建的文章一插入就带上了删除时间
+		field.Time("deleted_at").Optional().Nillable().Comment("删除时间 假删除"),
+		// 同理 草稿的发布时间必须为nil 由业务在发布时写入 更新时也不能自动刷新
+		field.Time("published_at").Optional().Nillable().Comment("发布时间 为nil表示未发布"),
 
 		field.String("title").Comment("文章标题"),
 		field.String("summary").Comment("文章概述"),

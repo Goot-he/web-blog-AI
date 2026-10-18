@@ -20,7 +20,7 @@ func (Category) Fields() []ent.Field {
 		field.Uint64("id").Comment("用户编号"),
 		field.Time("created_at").Default(time.Now).Comment("创建时间"),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Default(time.Now).Comment("删除时间"),
+		field.Time("deleted_at").Optional().Nillable().Comment("删除时间"),
 		field.String("category").Comment("分类名"),
 		field.Uint64("type_id").Optional().Default(0).Comment("上级分类ID"),
 	}

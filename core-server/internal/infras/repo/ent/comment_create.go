@@ -118,6 +118,12 @@ func (_c *CommentCreate) SetNillableReplyUserID(v *uint64) *CommentCreate {
 	return _c
 }
 
+// SetContent sets the "content" field.
+func (_c *CommentCreate) SetContent(v string) *CommentCreate {
+	_c.mutation.SetContent(v)
+	return _c
+}
+
 // SetLikeCount sets the "like_count" field.
 func (_c *CommentCreate) SetLikeCount(v uint64) *CommentCreate {
 	_c.mutation.SetLikeCount(v)
@@ -211,10 +217,6 @@ func (_c *CommentCreate) defaults() {
 		v := comment.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := comment.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
 	if _, ok := _c.mutation.RootID(); !ok {
 		v := comment.DefaultRootID
 		_c.mutation.SetRootID(v)
@@ -250,6 +252,9 @@ func (_c *CommentCreate) check() error {
 	}
 	if _, ok := _c.mutation.PublishUserID(); !ok {
 		return &ValidationError{Name: "publish_user_id", err: errors.New(`ent: missing required field "Comment.publish_user_id"`)}
+	}
+	if _, ok := _c.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Comment.content"`)}
 	}
 	if _, ok := _c.mutation.LikeCount(); !ok {
 		return &ValidationError{Name: "like_count", err: errors.New(`ent: missing required field "Comment.like_count"`)}
@@ -318,6 +323,10 @@ func (_c *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ReplyUserID(); ok {
 		_spec.SetField(comment.FieldReplyUserID, field.TypeUint64, value)
 		_node.ReplyUserID = value
+	}
+	if value, ok := _c.mutation.Content(); ok {
+		_spec.SetField(comment.FieldContent, field.TypeString, value)
+		_node.Content = value
 	}
 	if value, ok := _c.mutation.LikeCount(); ok {
 		_spec.SetField(comment.FieldLikeCount, field.TypeUint64, value)

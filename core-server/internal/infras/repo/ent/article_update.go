@@ -77,6 +77,14 @@ func (_u *ArticleUpdate) SetPublishedAt(v time.Time) *ArticleUpdate {
 	return _u
 }
 
+// SetNillablePublishedAt sets the "published_at" field if the given value is not nil.
+func (_u *ArticleUpdate) SetNillablePublishedAt(v *time.Time) *ArticleUpdate {
+	if v != nil {
+		_u.SetPublishedAt(*v)
+	}
+	return _u
+}
+
 // ClearPublishedAt clears the value of the "published_at" field.
 func (_u *ArticleUpdate) ClearPublishedAt() *ArticleUpdate {
 	_u.mutation.ClearPublishedAt()
@@ -424,10 +432,6 @@ func (_u *ArticleUpdate) defaults() {
 		v := article.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _u.mutation.PublishedAt(); !ok && !_u.mutation.PublishedAtCleared() {
-		v := article.UpdateDefaultPublishedAt()
-		_u.mutation.SetPublishedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -700,6 +704,14 @@ func (_u *ArticleUpdateOne) ClearDeletedAt() *ArticleUpdateOne {
 // SetPublishedAt sets the "published_at" field.
 func (_u *ArticleUpdateOne) SetPublishedAt(v time.Time) *ArticleUpdateOne {
 	_u.mutation.SetPublishedAt(v)
+	return _u
+}
+
+// SetNillablePublishedAt sets the "published_at" field if the given value is not nil.
+func (_u *ArticleUpdateOne) SetNillablePublishedAt(v *time.Time) *ArticleUpdateOne {
+	if v != nil {
+		_u.SetPublishedAt(*v)
+	}
 	return _u
 }
 
@@ -1062,10 +1074,6 @@ func (_u *ArticleUpdateOne) defaults() {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := article.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := _u.mutation.PublishedAt(); !ok && !_u.mutation.PublishedAtCleared() {
-		v := article.UpdateDefaultPublishedAt()
-		_u.mutation.SetPublishedAt(v)
 	}
 }
 

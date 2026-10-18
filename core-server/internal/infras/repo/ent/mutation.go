@@ -2426,6 +2426,7 @@ type CommentMutation struct {
 	addreply_id      *int64
 	reply_user_id    *uint64
 	addreply_user_id *int64
+	content          *string
 	like_count       *uint64
 	addlike_count    *int64
 	child_count      *uint64
@@ -2947,6 +2948,42 @@ func (m *CommentMutation) ResetReplyUserID() {
 	delete(m.clearedFields, comment.FieldReplyUserID)
 }
 
+// SetContent sets the "content" field.
+func (m *CommentMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *CommentMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the Comment entity.
+// If the Comment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommentMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *CommentMutation) ResetContent() {
+	m.content = nil
+}
+
 // SetLikeCount sets the "like_count" field.
 func (m *CommentMutation) SetLikeCount(u uint64) {
 	m.like_count = &u
@@ -3160,7 +3197,7 @@ func (m *CommentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CommentMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, comment.FieldCreatedAt)
 	}
@@ -3184,6 +3221,9 @@ func (m *CommentMutation) Fields() []string {
 	}
 	if m.reply_user_id != nil {
 		fields = append(fields, comment.FieldReplyUserID)
+	}
+	if m.content != nil {
+		fields = append(fields, comment.FieldContent)
 	}
 	if m.like_count != nil {
 		fields = append(fields, comment.FieldLikeCount)
@@ -3215,6 +3255,8 @@ func (m *CommentMutation) Field(name string) (ent.Value, bool) {
 		return m.ReplyID()
 	case comment.FieldReplyUserID:
 		return m.ReplyUserID()
+	case comment.FieldContent:
+		return m.Content()
 	case comment.FieldLikeCount:
 		return m.LikeCount()
 	case comment.FieldChildCount:
@@ -3244,6 +3286,8 @@ func (m *CommentMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldReplyID(ctx)
 	case comment.FieldReplyUserID:
 		return m.OldReplyUserID(ctx)
+	case comment.FieldContent:
+		return m.OldContent(ctx)
 	case comment.FieldLikeCount:
 		return m.OldLikeCount(ctx)
 	case comment.FieldChildCount:
@@ -3312,6 +3356,13 @@ func (m *CommentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetReplyUserID(v)
+		return nil
+	case comment.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
 		return nil
 	case comment.FieldLikeCount:
 		v, ok := value.(uint64)
@@ -3490,6 +3541,9 @@ func (m *CommentMutation) ResetField(name string) error {
 	case comment.FieldReplyUserID:
 		m.ResetReplyUserID()
 		return nil
+	case comment.FieldContent:
+		m.ResetContent()
+		return nil
 	case comment.FieldLikeCount:
 		m.ResetLikeCount()
 		return nil
@@ -3602,7 +3656,8 @@ type InteractionCountMutation struct {
 	updated_at       *time.Time
 	deleted_at       *time.Time
 	object_type      *interaction_count.ObjectType
-	object_id        *string
+	object_id        *uint64
+	addobject_id     *int64
 	interaction_type *interaction_count.InteractionType
 	count            *uint64
 	addcount         *int64
@@ -3874,12 +3929,13 @@ func (m *InteractionCountMutation) ResetObjectType() {
 }
 
 // SetObjectID sets the "object_id" field.
-func (m *InteractionCountMutation) SetObjectID(s string) {
-	m.object_id = &s
+func (m *InteractionCountMutation) SetObjectID(u uint64) {
+	m.object_id = &u
+	m.addobject_id = nil
 }
 
 // ObjectID returns the value of the "object_id" field in the mutation.
-func (m *InteractionCountMutation) ObjectID() (r string, exists bool) {
+func (m *InteractionCountMutation) ObjectID() (r uint64, exists bool) {
 	v := m.object_id
 	if v == nil {
 		return
@@ -3890,7 +3946,7 @@ func (m *InteractionCountMutation) ObjectID() (r string, exists bool) {
 // OldObjectID returns the old "object_id" field's value of the Interaction_count entity.
 // If the Interaction_count object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InteractionCountMutation) OldObjectID(ctx context.Context) (v string, err error) {
+func (m *InteractionCountMutation) OldObjectID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldObjectID is only allowed on UpdateOne operations")
 	}
@@ -3904,9 +3960,28 @@ func (m *InteractionCountMutation) OldObjectID(ctx context.Context) (v string, e
 	return oldValue.ObjectID, nil
 }
 
+// AddObjectID adds u to the "object_id" field.
+func (m *InteractionCountMutation) AddObjectID(u int64) {
+	if m.addobject_id != nil {
+		*m.addobject_id += u
+	} else {
+		m.addobject_id = &u
+	}
+}
+
+// AddedObjectID returns the value that was added to the "object_id" field in this mutation.
+func (m *InteractionCountMutation) AddedObjectID() (r int64, exists bool) {
+	v := m.addobject_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetObjectID resets all changes to the "object_id" field.
 func (m *InteractionCountMutation) ResetObjectID() {
 	m.object_id = nil
+	m.addobject_id = nil
 }
 
 // SetInteractionType sets the "interaction_type" field.
@@ -4153,7 +4228,7 @@ func (m *InteractionCountMutation) SetField(name string, value ent.Value) error 
 		m.SetObjectType(v)
 		return nil
 	case interaction_count.FieldObjectID:
-		v, ok := value.(string)
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4181,6 +4256,9 @@ func (m *InteractionCountMutation) SetField(name string, value ent.Value) error 
 // this mutation.
 func (m *InteractionCountMutation) AddedFields() []string {
 	var fields []string
+	if m.addobject_id != nil {
+		fields = append(fields, interaction_count.FieldObjectID)
+	}
 	if m.addcount != nil {
 		fields = append(fields, interaction_count.FieldCount)
 	}
@@ -4192,6 +4270,8 @@ func (m *InteractionCountMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *InteractionCountMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case interaction_count.FieldObjectID:
+		return m.AddedObjectID()
 	case interaction_count.FieldCount:
 		return m.AddedCount()
 	}
@@ -4203,6 +4283,13 @@ func (m *InteractionCountMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *InteractionCountMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case interaction_count.FieldObjectID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddObjectID(v)
+		return nil
 	case interaction_count.FieldCount:
 		v, ok := value.(int64)
 		if !ok {

@@ -95,6 +95,11 @@ func ReplyUserID(v uint64) predicate.Comment {
 	return predicate.Comment(sql.FieldEQ(FieldReplyUserID, v))
 }
 
+// Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
+func Content(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldEQ(FieldContent, v))
+}
+
 // LikeCount applies equality check predicate on the "like_count" field. It's identical to LikeCountEQ.
 func LikeCount(v uint64) predicate.Comment {
 	return predicate.Comment(sql.FieldEQ(FieldLikeCount, v))
@@ -423,6 +428,71 @@ func ReplyUserIDIsNil() predicate.Comment {
 // ReplyUserIDNotNil applies the NotNil predicate on the "reply_user_id" field.
 func ReplyUserIDNotNil() predicate.Comment {
 	return predicate.Comment(sql.FieldNotNull(FieldReplyUserID))
+}
+
+// ContentEQ applies the EQ predicate on the "content" field.
+func ContentEQ(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldEQ(FieldContent, v))
+}
+
+// ContentNEQ applies the NEQ predicate on the "content" field.
+func ContentNEQ(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldNEQ(FieldContent, v))
+}
+
+// ContentIn applies the In predicate on the "content" field.
+func ContentIn(vs ...string) predicate.Comment {
+	return predicate.Comment(sql.FieldIn(FieldContent, vs...))
+}
+
+// ContentNotIn applies the NotIn predicate on the "content" field.
+func ContentNotIn(vs ...string) predicate.Comment {
+	return predicate.Comment(sql.FieldNotIn(FieldContent, vs...))
+}
+
+// ContentGT applies the GT predicate on the "content" field.
+func ContentGT(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldGT(FieldContent, v))
+}
+
+// ContentGTE applies the GTE predicate on the "content" field.
+func ContentGTE(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldGTE(FieldContent, v))
+}
+
+// ContentLT applies the LT predicate on the "content" field.
+func ContentLT(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldLT(FieldContent, v))
+}
+
+// ContentLTE applies the LTE predicate on the "content" field.
+func ContentLTE(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldLTE(FieldContent, v))
+}
+
+// ContentContains applies the Contains predicate on the "content" field.
+func ContentContains(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldContains(FieldContent, v))
+}
+
+// ContentHasPrefix applies the HasPrefix predicate on the "content" field.
+func ContentHasPrefix(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldHasPrefix(FieldContent, v))
+}
+
+// ContentHasSuffix applies the HasSuffix predicate on the "content" field.
+func ContentHasSuffix(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldHasSuffix(FieldContent, v))
+}
+
+// ContentEqualFold applies the EqualFold predicate on the "content" field.
+func ContentEqualFold(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldEqualFold(FieldContent, v))
+}
+
+// ContentContainsFold applies the ContainsFold predicate on the "content" field.
+func ContentContainsFold(v string) predicate.Comment {
+	return predicate.Comment(sql.FieldContainsFold(FieldContent, v))
 }
 
 // LikeCountEQ applies the EQ predicate on the "like_count" field.

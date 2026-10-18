@@ -72,6 +72,7 @@ var (
 		{Name: "root_id", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "reply_id", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "reply_user_id", Type: field.TypeUint64, Nullable: true, Default: 0},
+		{Name: "content", Type: field.TypeString},
 		{Name: "like_count", Type: field.TypeUint64, Default: 0},
 		{Name: "child_count", Type: field.TypeUint64, Default: 0},
 		{Name: "article_id", Type: field.TypeUint64},
@@ -85,13 +86,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "comments_articles_comments",
-				Columns:    []*schema.Column{CommentsColumns[9]},
+				Columns:    []*schema.Column{CommentsColumns[10]},
 				RefColumns: []*schema.Column{ArticlesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "comments_users_comments",
-				Columns:    []*schema.Column{CommentsColumns[10]},
+				Columns:    []*schema.Column{CommentsColumns[11]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -104,7 +105,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "object_type", Type: field.TypeEnum, Enums: []string{"article", "comment", "life"}},
-		{Name: "object_id", Type: field.TypeString},
+		{Name: "object_id", Type: field.TypeUint64},
 		{Name: "interaction_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"like", "comment", "favor", "unknown"}, Default: "unknown"},
 		{Name: "count", Type: field.TypeUint64, Default: 0},
 	}

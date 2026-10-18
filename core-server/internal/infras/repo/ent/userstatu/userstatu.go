@@ -85,8 +85,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
 	// DefaultArticleCount holds the default value on creation for the "article_count" field.
 	DefaultArticleCount uint64
 	// DefaultLikeCount holds the default value on creation for the "like_count" field.

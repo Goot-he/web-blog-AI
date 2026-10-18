@@ -27,7 +27,7 @@ type Interaction_count struct {
 	// 对象类型
 	ObjectType interaction_count.ObjectType `json:"object_type,omitempty"`
 	// 对象ID
-	ObjectID string `json:"object_id,omitempty"`
+	ObjectID uint64 `json:"object_id,omitempty"`
 	// 互动类型
 	InteractionType interaction_count.InteractionType `json:"interaction_type,omitempty"`
 	// 计数
@@ -40,9 +40,9 @@ func (*Interaction_count) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case interaction_count.FieldID, interaction_count.FieldCount:
+		case interaction_count.FieldID, interaction_count.FieldObjectID, interaction_count.FieldCount:
 			values[i] = new(sql.NullInt64)
-		case interaction_count.FieldObjectType, interaction_count.FieldObjectID, interaction_count.FieldInteractionType:
+		case interaction_count.FieldObjectType, interaction_count.FieldInteractionType:
 			values[i] = new(sql.NullString)
 		case interaction_count.FieldCreatedAt, interaction_count.FieldUpdatedAt, interaction_count.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -93,10 +93,10 @@ func (_m *Interaction_count) assignValues(columns []string, values []any) error 
 				_m.ObjectType = interaction_count.ObjectType(value.String)
 			}
 		case interaction_count.FieldObjectID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field object_id", values[i])
 			} else if value.Valid {
-				_m.ObjectID = value.String
+				_m.ObjectID = uint64(value.Int64)
 			}
 		case interaction_count.FieldInteractionType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -161,7 +161,7 @@ func (_m *Interaction_count) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.ObjectType))
 	builder.WriteString(", ")
 	builder.WriteString("object_id=")
-	builder.WriteString(_m.ObjectID)
+	builder.WriteString(fmt.Sprintf("%v", _m.ObjectID))
 	builder.WriteString(", ")
 	builder.WriteString("interaction_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.InteractionType))

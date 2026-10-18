@@ -179,6 +179,20 @@ func (_u *CommentUpdate) ClearReplyUserID() *CommentUpdate {
 	return _u
 }
 
+// SetContent sets the "content" field.
+func (_u *CommentUpdate) SetContent(v string) *CommentUpdate {
+	_u.mutation.SetContent(v)
+	return _u
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (_u *CommentUpdate) SetNillableContent(v *string) *CommentUpdate {
+	if v != nil {
+		_u.SetContent(*v)
+	}
+	return _u
+}
+
 // SetLikeCount sets the "like_count" field.
 func (_u *CommentUpdate) SetLikeCount(v uint64) *CommentUpdate {
 	_u.mutation.ResetLikeCount()
@@ -351,6 +365,9 @@ func (_u *CommentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ReplyUserIDCleared() {
 		_spec.ClearField(comment.FieldReplyUserID, field.TypeUint64)
+	}
+	if value, ok := _u.mutation.Content(); ok {
+		_spec.SetField(comment.FieldContent, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(comment.FieldLikeCount, field.TypeUint64, value)
@@ -591,6 +608,20 @@ func (_u *CommentUpdateOne) ClearReplyUserID() *CommentUpdateOne {
 	return _u
 }
 
+// SetContent sets the "content" field.
+func (_u *CommentUpdateOne) SetContent(v string) *CommentUpdateOne {
+	_u.mutation.SetContent(v)
+	return _u
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (_u *CommentUpdateOne) SetNillableContent(v *string) *CommentUpdateOne {
+	if v != nil {
+		_u.SetContent(*v)
+	}
+	return _u
+}
+
 // SetLikeCount sets the "like_count" field.
 func (_u *CommentUpdateOne) SetLikeCount(v uint64) *CommentUpdateOne {
 	_u.mutation.ResetLikeCount()
@@ -793,6 +824,9 @@ func (_u *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err er
 	}
 	if _u.mutation.ReplyUserIDCleared() {
 		_spec.ClearField(comment.FieldReplyUserID, field.TypeUint64)
+	}
+	if value, ok := _u.mutation.Content(); ok {
+		_spec.SetField(comment.FieldContent, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.LikeCount(); ok {
 		_spec.SetField(comment.FieldLikeCount, field.TypeUint64, value)

@@ -36,6 +36,8 @@ type Comment struct {
 	ReplyID uint64 `json:"reply_id,omitempty"`
 	// 回复的用户的ID
 	ReplyUserID uint64 `json:"reply_user_id,omitempty"`
+	// 评论内容
+	Content string `json:"content,omitempty"`
 	// 评论点赞量
 	LikeCount uint64 `json:"like_count,omitempty"`
 	// 评论下的子评论数量
@@ -86,6 +88,8 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case comment.FieldID, comment.FieldArticleID, comment.FieldPublishUserID, comment.FieldRootID, comment.FieldReplyID, comment.FieldReplyUserID, comment.FieldLikeCount, comment.FieldChildCount:
 			values[i] = new(sql.NullInt64)
+		case comment.FieldContent:
+			values[i] = new(sql.NullString)
 		case comment.FieldCreatedAt, comment.FieldUpdatedAt, comment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -157,6 +161,12 @@ func (_m *Comment) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field reply_user_id", values[i])
 			} else if value.Valid {
 				_m.ReplyUserID = uint64(value.Int64)
+			}
+		case comment.FieldContent:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field content", values[i])
+			} else if value.Valid {
+				_m.Content = value.String
 			}
 		case comment.FieldLikeCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -241,6 +251,9 @@ func (_m *Comment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("reply_user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ReplyUserID))
+	builder.WriteString(", ")
+	builder.WriteString("content=")
+	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
 	builder.WriteString("like_count=")
 	builder.WriteString(fmt.Sprintf("%v", _m.LikeCount))

@@ -147,10 +147,6 @@ func (_c *CategoryCreate) defaults() {
 		v := category.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := category.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
 	if _, ok := _c.mutation.TypeID(); !ok {
 		v := category.DefaultTypeID
 		_c.mutation.SetTypeID(v)

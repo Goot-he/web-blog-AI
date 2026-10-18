@@ -70,7 +70,7 @@ func DeletedAt(v time.Time) predicate.Interaction_count {
 }
 
 // ObjectID applies equality check predicate on the "object_id" field. It's identical to ObjectIDEQ.
-func ObjectID(v string) predicate.Interaction_count {
+func ObjectID(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldEQ(FieldObjectID, v))
 }
 
@@ -230,68 +230,43 @@ func ObjectTypeNotIn(vs ...ObjectType) predicate.Interaction_count {
 }
 
 // ObjectIDEQ applies the EQ predicate on the "object_id" field.
-func ObjectIDEQ(v string) predicate.Interaction_count {
+func ObjectIDEQ(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldEQ(FieldObjectID, v))
 }
 
 // ObjectIDNEQ applies the NEQ predicate on the "object_id" field.
-func ObjectIDNEQ(v string) predicate.Interaction_count {
+func ObjectIDNEQ(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldNEQ(FieldObjectID, v))
 }
 
 // ObjectIDIn applies the In predicate on the "object_id" field.
-func ObjectIDIn(vs ...string) predicate.Interaction_count {
+func ObjectIDIn(vs ...uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldIn(FieldObjectID, vs...))
 }
 
 // ObjectIDNotIn applies the NotIn predicate on the "object_id" field.
-func ObjectIDNotIn(vs ...string) predicate.Interaction_count {
+func ObjectIDNotIn(vs ...uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldNotIn(FieldObjectID, vs...))
 }
 
 // ObjectIDGT applies the GT predicate on the "object_id" field.
-func ObjectIDGT(v string) predicate.Interaction_count {
+func ObjectIDGT(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldGT(FieldObjectID, v))
 }
 
 // ObjectIDGTE applies the GTE predicate on the "object_id" field.
-func ObjectIDGTE(v string) predicate.Interaction_count {
+func ObjectIDGTE(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldGTE(FieldObjectID, v))
 }
 
 // ObjectIDLT applies the LT predicate on the "object_id" field.
-func ObjectIDLT(v string) predicate.Interaction_count {
+func ObjectIDLT(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldLT(FieldObjectID, v))
 }
 
 // ObjectIDLTE applies the LTE predicate on the "object_id" field.
-func ObjectIDLTE(v string) predicate.Interaction_count {
+func ObjectIDLTE(v uint64) predicate.Interaction_count {
 	return predicate.Interaction_count(sql.FieldLTE(FieldObjectID, v))
-}
-
-// ObjectIDContains applies the Contains predicate on the "object_id" field.
-func ObjectIDContains(v string) predicate.Interaction_count {
-	return predicate.Interaction_count(sql.FieldContains(FieldObjectID, v))
-}
-
-// ObjectIDHasPrefix applies the HasPrefix predicate on the "object_id" field.
-func ObjectIDHasPrefix(v string) predicate.Interaction_count {
-	return predicate.Interaction_count(sql.FieldHasPrefix(FieldObjectID, v))
-}
-
-// ObjectIDHasSuffix applies the HasSuffix predicate on the "object_id" field.
-func ObjectIDHasSuffix(v string) predicate.Interaction_count {
-	return predicate.Interaction_count(sql.FieldHasSuffix(FieldObjectID, v))
-}
-
-// ObjectIDEqualFold applies the EqualFold predicate on the "object_id" field.
-func ObjectIDEqualFold(v string) predicate.Interaction_count {
-	return predicate.Interaction_count(sql.FieldEqualFold(FieldObjectID, v))
-}
-
-// ObjectIDContainsFold applies the ContainsFold predicate on the "object_id" field.
-func ObjectIDContainsFold(v string) predicate.Interaction_count {
-	return predicate.Interaction_count(sql.FieldContainsFold(FieldObjectID, v))
 }
 
 // InteractionTypeEQ applies the EQ predicate on the "interaction_type" field.

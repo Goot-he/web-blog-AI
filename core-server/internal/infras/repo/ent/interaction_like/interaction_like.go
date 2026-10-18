@@ -61,8 +61,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
 )
 
 // ObjectType defines the type for the "object_type" enum field.

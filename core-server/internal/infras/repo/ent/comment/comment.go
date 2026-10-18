@@ -30,6 +30,8 @@ const (
 	FieldReplyID = "reply_id"
 	// FieldReplyUserID holds the string denoting the reply_user_id field in the database.
 	FieldReplyUserID = "reply_user_id"
+	// FieldContent holds the string denoting the content field in the database.
+	FieldContent = "content"
 	// FieldLikeCount holds the string denoting the like_count field in the database.
 	FieldLikeCount = "like_count"
 	// FieldChildCount holds the string denoting the child_count field in the database.
@@ -67,6 +69,7 @@ var Columns = []string{
 	FieldRootID,
 	FieldReplyID,
 	FieldReplyUserID,
+	FieldContent,
 	FieldLikeCount,
 	FieldChildCount,
 }
@@ -88,8 +91,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
 	// DefaultRootID holds the default value on creation for the "root_id" field.
 	DefaultRootID uint64
 	// DefaultReplyID holds the default value on creation for the "reply_id" field.
@@ -148,6 +149,11 @@ func ByReplyID(opts ...sql.OrderTermOption) OrderOption {
 // ByReplyUserID orders the results by the reply_user_id field.
 func ByReplyUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReplyUserID, opts...).ToFunc()
+}
+
+// ByContent orders the results by the content field.
+func ByContent(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContent, opts...).ToFunc()
 }
 
 // ByLikeCount orders the results by the like_count field.

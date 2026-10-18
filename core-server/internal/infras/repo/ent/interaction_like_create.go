@@ -151,10 +151,6 @@ func (_c *InteractionLikeCreate) defaults() {
 		v := interaction_like.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := interaction_like.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
 	if _, ok := _c.mutation.ObjectType(); !ok {
 		v := interaction_like.DefaultObjectType
 		_c.mutation.SetObjectType(v)

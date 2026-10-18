@@ -30,16 +30,6 @@ func init() {
 	article.DefaultUpdatedAt = articleDescUpdatedAt.Default.(func() time.Time)
 	// article.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	article.UpdateDefaultUpdatedAt = articleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// articleDescDeletedAt is the schema descriptor for deleted_at field.
-	articleDescDeletedAt := articleFields[3].Descriptor()
-	// article.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	article.DefaultDeletedAt = articleDescDeletedAt.Default.(func() time.Time)
-	// articleDescPublishedAt is the schema descriptor for published_at field.
-	articleDescPublishedAt := articleFields[4].Descriptor()
-	// article.DefaultPublishedAt holds the default value on creation for the published_at field.
-	article.DefaultPublishedAt = articleDescPublishedAt.Default.(func() time.Time)
-	// article.UpdateDefaultPublishedAt holds the default value on update for the published_at field.
-	article.UpdateDefaultPublishedAt = articleDescPublishedAt.UpdateDefault.(func() time.Time)
 	// articleDescCoverage is the schema descriptor for coverage field.
 	articleDescCoverage := articleFields[8].Descriptor()
 	// article.DefaultCoverage holds the default value on creation for the coverage field.
@@ -84,10 +74,6 @@ func init() {
 	category.DefaultUpdatedAt = categoryDescUpdatedAt.Default.(func() time.Time)
 	// category.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	category.UpdateDefaultUpdatedAt = categoryDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// categoryDescDeletedAt is the schema descriptor for deleted_at field.
-	categoryDescDeletedAt := categoryFields[3].Descriptor()
-	// category.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	category.DefaultDeletedAt = categoryDescDeletedAt.Default.(func() time.Time)
 	// categoryDescTypeID is the schema descriptor for type_id field.
 	categoryDescTypeID := categoryFields[5].Descriptor()
 	// category.DefaultTypeID holds the default value on creation for the type_id field.
@@ -104,10 +90,6 @@ func init() {
 	comment.DefaultUpdatedAt = commentDescUpdatedAt.Default.(func() time.Time)
 	// comment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	comment.UpdateDefaultUpdatedAt = commentDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// commentDescDeletedAt is the schema descriptor for deleted_at field.
-	commentDescDeletedAt := commentFields[3].Descriptor()
-	// comment.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	comment.DefaultDeletedAt = commentDescDeletedAt.Default.(func() time.Time)
 	// commentDescRootID is the schema descriptor for root_id field.
 	commentDescRootID := commentFields[6].Descriptor()
 	// comment.DefaultRootID holds the default value on creation for the root_id field.
@@ -121,11 +103,11 @@ func init() {
 	// comment.DefaultReplyUserID holds the default value on creation for the reply_user_id field.
 	comment.DefaultReplyUserID = commentDescReplyUserID.Default.(uint64)
 	// commentDescLikeCount is the schema descriptor for like_count field.
-	commentDescLikeCount := commentFields[9].Descriptor()
+	commentDescLikeCount := commentFields[10].Descriptor()
 	// comment.DefaultLikeCount holds the default value on creation for the like_count field.
 	comment.DefaultLikeCount = commentDescLikeCount.Default.(uint64)
 	// commentDescChildCount is the schema descriptor for child_count field.
-	commentDescChildCount := commentFields[10].Descriptor()
+	commentDescChildCount := commentFields[11].Descriptor()
 	// comment.DefaultChildCount holds the default value on creation for the child_count field.
 	comment.DefaultChildCount = commentDescChildCount.Default.(uint64)
 	interaction_countFields := schema.Interaction_count{}.Fields()
@@ -140,10 +122,6 @@ func init() {
 	interaction_count.DefaultUpdatedAt = interaction_countDescUpdatedAt.Default.(func() time.Time)
 	// interaction_count.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	interaction_count.UpdateDefaultUpdatedAt = interaction_countDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// interaction_countDescDeletedAt is the schema descriptor for deleted_at field.
-	interaction_countDescDeletedAt := interaction_countFields[3].Descriptor()
-	// interaction_count.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	interaction_count.DefaultDeletedAt = interaction_countDescDeletedAt.Default.(func() time.Time)
 	// interaction_countDescCount is the schema descriptor for count field.
 	interaction_countDescCount := interaction_countFields[7].Descriptor()
 	// interaction_count.DefaultCount holds the default value on creation for the count field.
@@ -160,10 +138,6 @@ func init() {
 	interaction_like.DefaultUpdatedAt = interaction_likeDescUpdatedAt.Default.(func() time.Time)
 	// interaction_like.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	interaction_like.UpdateDefaultUpdatedAt = interaction_likeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// interaction_likeDescDeletedAt is the schema descriptor for deleted_at field.
-	interaction_likeDescDeletedAt := interaction_likeFields[3].Descriptor()
-	// interaction_like.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	interaction_like.DefaultDeletedAt = interaction_likeDescDeletedAt.Default.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCreatedAt is the schema descriptor for created_at field.
@@ -176,10 +150,6 @@ func init() {
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// userDescDeletedAt is the schema descriptor for deleted_at field.
-	userDescDeletedAt := userFields[3].Descriptor()
-	// user.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	user.DefaultDeletedAt = userDescDeletedAt.Default.(func() time.Time)
 	// userDescEmail is the schema descriptor for email field.
 	userDescEmail := userFields[7].Descriptor()
 	// user.DefaultEmail holds the default value on creation for the email field.
@@ -208,10 +178,6 @@ func init() {
 	userstatu.DefaultUpdatedAt = userstatuDescUpdatedAt.Default.(func() time.Time)
 	// userstatu.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	userstatu.UpdateDefaultUpdatedAt = userstatuDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// userstatuDescDeletedAt is the schema descriptor for deleted_at field.
-	userstatuDescDeletedAt := userstatuFields[3].Descriptor()
-	// userstatu.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	userstatu.DefaultDeletedAt = userstatuDescDeletedAt.Default.(func() time.Time)
 	// userstatuDescArticleCount is the schema descriptor for article_count field.
 	userstatuDescArticleCount := userstatuFields[4].Descriptor()
 	// userstatu.DefaultArticleCount holds the default value on creation for the article_count field.

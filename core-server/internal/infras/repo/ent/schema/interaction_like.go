@@ -20,7 +20,7 @@ func (Interaction_like) Fields() []ent.Field {
 		field.Uint64("id").Comment("编号"),
 		field.Time("created_at").Default(time.Now).Comment("创建时间"),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Default(time.Now).Comment("删除时间"),
+		field.Time("deleted_at").Optional().Nillable().Comment("删除时间"),
 
 		field.Enum("object_type").Values("article", "comment", "unknown").Default("unknown").Comment("点赞对象"),
 		field.Uint64("object_id").Comment("点赞对象ID"),

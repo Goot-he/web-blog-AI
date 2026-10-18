@@ -295,14 +295,6 @@ func (_c *ArticleCreate) defaults() {
 		v := article.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := article.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
-	if _, ok := _c.mutation.PublishedAt(); !ok {
-		v := article.DefaultPublishedAt()
-		_c.mutation.SetPublishedAt(v)
-	}
 	if _, ok := _c.mutation.Coverage(); !ok {
 		v := article.DefaultCoverage
 		_c.mutation.SetCoverage(v)

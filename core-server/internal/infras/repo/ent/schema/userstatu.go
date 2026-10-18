@@ -20,7 +20,7 @@ func (UserStatu) Fields() []ent.Field {
 		field.Uint64("user_id").Comment("用户ID"),
 		field.Time("created_at").Default(time.Now).Comment("创建时间"),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Default(time.Now).Comment("删除时间 假删除"),
+		field.Time("deleted_at").Optional().Nillable().Comment("删除时间 假删除"),
 
 		field.Uint64("article_count").Default(0).Comment("文章数量"),
 		field.Uint64("like_count").Default(0).Comment("点赞量"),

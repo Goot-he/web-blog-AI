@@ -229,10 +229,6 @@ func (_c *UserStatuCreate) defaults() {
 		v := userstatu.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := userstatu.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
 	if _, ok := _c.mutation.ArticleCount(); !ok {
 		v := userstatu.DefaultArticleCount
 		_c.mutation.SetArticleCount(v)

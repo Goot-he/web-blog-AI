@@ -115,12 +115,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
-	DefaultDeletedAt func() time.Time
-	// DefaultPublishedAt holds the default value on creation for the "published_at" field.
-	DefaultPublishedAt func() time.Time
-	// UpdateDefaultPublishedAt holds the default value on update for the "published_at" field.
-	UpdateDefaultPublishedAt func() time.Time
 	// DefaultCoverage holds the default value on creation for the "coverage" field.
 	DefaultCoverage string
 	// DefaultCategoryID holds the default value on creation for the "category_id" field.

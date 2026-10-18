@@ -83,16 +83,23 @@ func (_u *InteractionCountUpdate) SetNillableObjectType(v *interaction_count.Obj
 }
 
 // SetObjectID sets the "object_id" field.
-func (_u *InteractionCountUpdate) SetObjectID(v string) *InteractionCountUpdate {
+func (_u *InteractionCountUpdate) SetObjectID(v uint64) *InteractionCountUpdate {
+	_u.mutation.ResetObjectID()
 	_u.mutation.SetObjectID(v)
 	return _u
 }
 
 // SetNillableObjectID sets the "object_id" field if the given value is not nil.
-func (_u *InteractionCountUpdate) SetNillableObjectID(v *string) *InteractionCountUpdate {
+func (_u *InteractionCountUpdate) SetNillableObjectID(v *uint64) *InteractionCountUpdate {
 	if v != nil {
 		_u.SetObjectID(*v)
 	}
+	return _u
+}
+
+// AddObjectID adds value to the "object_id" field.
+func (_u *InteractionCountUpdate) AddObjectID(v int64) *InteractionCountUpdate {
+	_u.mutation.AddObjectID(v)
 	return _u
 }
 
@@ -221,7 +228,10 @@ func (_u *InteractionCountUpdate) sqlSave(ctx context.Context) (_node int, err e
 		_spec.SetField(interaction_count.FieldObjectType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ObjectID(); ok {
-		_spec.SetField(interaction_count.FieldObjectID, field.TypeString, value)
+		_spec.SetField(interaction_count.FieldObjectID, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.AddedObjectID(); ok {
+		_spec.AddField(interaction_count.FieldObjectID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.InteractionType(); ok {
 		_spec.SetField(interaction_count.FieldInteractionType, field.TypeEnum, value)
@@ -310,16 +320,23 @@ func (_u *InteractionCountUpdateOne) SetNillableObjectType(v *interaction_count.
 }
 
 // SetObjectID sets the "object_id" field.
-func (_u *InteractionCountUpdateOne) SetObjectID(v string) *InteractionCountUpdateOne {
+func (_u *InteractionCountUpdateOne) SetObjectID(v uint64) *InteractionCountUpdateOne {
+	_u.mutation.ResetObjectID()
 	_u.mutation.SetObjectID(v)
 	return _u
 }
 
 // SetNillableObjectID sets the "object_id" field if the given value is not nil.
-func (_u *InteractionCountUpdateOne) SetNillableObjectID(v *string) *InteractionCountUpdateOne {
+func (_u *InteractionCountUpdateOne) SetNillableObjectID(v *uint64) *InteractionCountUpdateOne {
 	if v != nil {
 		_u.SetObjectID(*v)
 	}
+	return _u
+}
+
+// AddObjectID adds value to the "object_id" field.
+func (_u *InteractionCountUpdateOne) AddObjectID(v int64) *InteractionCountUpdateOne {
+	_u.mutation.AddObjectID(v)
 	return _u
 }
 
@@ -478,7 +495,10 @@ func (_u *InteractionCountUpdateOne) sqlSave(ctx context.Context) (_node *Intera
 		_spec.SetField(interaction_count.FieldObjectType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ObjectID(); ok {
-		_spec.SetField(interaction_count.FieldObjectID, field.TypeString, value)
+		_spec.SetField(interaction_count.FieldObjectID, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.AddedObjectID(); ok {
+		_spec.AddField(interaction_count.FieldObjectID, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.InteractionType(); ok {
 		_spec.SetField(interaction_count.FieldInteractionType, field.TypeEnum, value)

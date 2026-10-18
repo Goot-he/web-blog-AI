@@ -283,10 +283,6 @@ func (_c *UserCreate) defaults() {
 		v := user.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DeletedAt(); !ok {
-		v := user.DefaultDeletedAt()
-		_c.mutation.SetDeletedAt(v)
-	}
 	if _, ok := _c.mutation.Email(); !ok {
 		v := user.DefaultEmail
 		_c.mutation.SetEmail(v)
