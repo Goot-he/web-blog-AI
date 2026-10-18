@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+// provide user favor service
+// 1. add favor
+// 2. cancel favor
+
+import "article.proto";
+
+package favor;
+option go_package = "core-server/internal/rpc/favorpb;favorpb";
+
+// 1.收藏操作 和 取消收藏
+message AddFavorRequest {
+  uint64 userID = 1;
+  string objectType = 2;
+  uint64 objectID = 3;
+}
+message AddFavorResponse {
+  bool success = 1;
+}
+
+message CancelFavorRequest {
+  uint64 userID = 1;
+  string objectType = 2;
+  uint64 objectID = 3;
+}
+message CancelFavorResponse {
+  bool success = 1;
+}
+
+message PageQueryUserFavorListRequest {
+  uint64 userID = 1;
+  string objectType = 2;
+  int32 page = 3;
+  int32 pageSize = 4;
+}
+message PageQueryUserFavorListResponse {
+  repeated article.Article articles = 1;
+  int64 total = 2;
+}
+
+message HasFavorRequest {
+  uint64 userID = 1;
+  string objectType = 2;
+  uint64 objectID = 3;
+}
+message HasFavorResponse {
+  bool isFavored = 1;
+}
+
+service FavorService {
+  rpc AddFavor(AddFavorRequest) returns (AddFavorResponse) {};
+  rpc CancelFavor(CancelFavorRequest) returns (CancelFavorResponse) {};
+  rpc PageQueryUserFavorList(PageQueryUserFavorListRequest) returns (PageQueryUserFavorListResponse) {};
+  rpc HasFavor(HasFavorRequest) returns (HasFavorResponse) {};
+}
