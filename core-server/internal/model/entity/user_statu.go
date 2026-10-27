@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Status struct {
+type UserStatus struct {
 	ID        uint64       `db:"id"`
 	CreatedAt time.Time    `db:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at"`
@@ -20,4 +20,5 @@ type Status struct {
 	FollowCount        uint64 `db:"follow_count"`
 	ReceiveFollowCount uint64 `db:"receive_follow_count"`
 	ViewCount          uint64 `db:"view_count"`
+	CommentCount       uint64 `db:"comment_count"`
 }

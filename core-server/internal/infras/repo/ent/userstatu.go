@@ -42,6 +42,8 @@ type UserStatu struct {
 	ReceiveFollowCount uint64 `json:"receive_follow_count,omitempty"`
 	// 被浏览量
 	ViewCount uint64 `json:"view_count,omitempty"`
+	// 评论数量
+	CommentCount uint64 `json:"comment_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserStatuQuery when eager-loading is set.
 	Edges        UserStatuEdges `json:"edges"`
@@ -73,7 +75,7 @@ func (*UserStatu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case userstatu.FieldID, userstatu.FieldUserID, userstatu.FieldArticleCount, userstatu.FieldLikeCount, userstatu.FieldReceiveLikeCount, userstatu.FieldFavorCount, userstatu.FieldReceiveFavorCount, userstatu.FieldFollowCount, userstatu.FieldReceiveFollowCount, userstatu.FieldViewCount:
+		case userstatu.FieldID, userstatu.FieldUserID, userstatu.FieldArticleCount, userstatu.FieldLikeCount, userstatu.FieldReceiveLikeCount, userstatu.FieldFavorCount, userstatu.FieldReceiveFavorCount, userstatu.FieldFollowCount, userstatu.FieldReceiveFollowCount, userstatu.FieldViewCount, userstatu.FieldCommentCount:
 			values[i] = new(sql.NullInt64)
 		case userstatu.FieldCreatedAt, userstatu.FieldUpdatedAt, userstatu.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -171,6 +173,12 @@ func (_m *UserStatu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ViewCount = uint64(value.Int64)
 			}
+		case userstatu.FieldCommentCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field comment_count", values[i])
+			} else if value.Valid {
+				_m.CommentCount = uint64(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -249,6 +257,9 @@ func (_m *UserStatu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("view_count=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ViewCount))
+	builder.WriteString(", ")
+	builder.WriteString("comment_count=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CommentCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

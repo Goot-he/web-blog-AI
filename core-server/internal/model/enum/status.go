@@ -1,18 +1,18 @@
 package enum
 
-type Status string
+type UserStatus string
 
 const (
-	StatusApproved Status = "approved"
-	StatusBlocked  Status = "blocked"
-	StatusUnknown  Status = "unknown"
+	StatusApproved UserStatus = "approved"
+	StatusBlocked  UserStatus = "blocked"
+	StatusUnknown  UserStatus = "unknown"
 )
 
-func (s Status) String() string {
+func (s UserStatus) String() string {
 	return string(s)
 }
 
-func ParseStatus(s string) Status {
+func ParseStatus(s string) UserStatus {
 	switch s {
 	case "approved":
 		return StatusApproved

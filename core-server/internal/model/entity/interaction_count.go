@@ -15,5 +15,17 @@ type InteractionCount struct {
 	ObjectType      enum.ObjectType      `db:"object_type"`
 	ObjectID        uint64               `db:"object_id"`
 	InteractionType enum.InteractionType `db:"interaction_type"`
-	Count           uint64               `db:"count"`
+	Count           int                  `db:"count"`
+}
+
+func (InteractionCount) TableName() string {
+	return "interaction_count"
+}
+
+type InteractionStatus struct {
+	LikeCount    int `db:"like_count"`
+	CommentCount int `db:"comment_count"`
+	ViewCount    int `db:"view_count"`
+	FavorCount   int `db:"favor_count"`
+	FollowCount  int `db:"follow_count"`
 }

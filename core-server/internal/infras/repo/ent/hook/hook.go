@@ -44,24 +44,24 @@ func (f CommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommentMutation", m)
 }
 
-// The Interaction_countFunc type is an adapter to allow the use of ordinary
-// function as Interaction_count mutator.
-type Interaction_countFunc func(context.Context, *ent.InteractionCountMutation) (ent.Value, error)
+// The InteractionCountFunc type is an adapter to allow the use of ordinary
+// function as InteractionCount mutator.
+type InteractionCountFunc func(context.Context, *ent.InteractionCountMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f Interaction_countFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+func (f InteractionCountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 	if mv, ok := m.(*ent.InteractionCountMutation); ok {
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InteractionCountMutation", m)
 }
 
-// The Interaction_likeFunc type is an adapter to allow the use of ordinary
-// function as Interaction_like mutator.
-type Interaction_likeFunc func(context.Context, *ent.InteractionLikeMutation) (ent.Value, error)
+// The InteractionLikeFunc type is an adapter to allow the use of ordinary
+// function as InteractionLike mutator.
+type InteractionLikeFunc func(context.Context, *ent.InteractionLikeMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f Interaction_likeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+func (f InteractionLikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 	if mv, ok := m.(*ent.InteractionLikeMutation); ok {
 		return f(ctx, mv)
 	}

@@ -14,8 +14,8 @@ import (
 	"core-server/internal/infras/repo/ent/article"
 	"core-server/internal/infras/repo/ent/category"
 	"core-server/internal/infras/repo/ent/comment"
-	"core-server/internal/infras/repo/ent/interaction_count"
-	"core-server/internal/infras/repo/ent/interaction_like"
+	"core-server/internal/infras/repo/ent/interactioncount"
+	"core-server/internal/infras/repo/ent/interactionlike"
 	"core-server/internal/infras/repo/ent/user"
 	"core-server/internal/infras/repo/ent/userstatu"
 
@@ -36,10 +36,10 @@ type Client struct {
 	Category *CategoryClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
-	// Interaction_count is the client for interacting with the Interaction_count builders.
-	Interaction_count *InteractionCountClient
-	// Interaction_like is the client for interacting with the Interaction_like builders.
-	Interaction_like *InteractionLikeClient
+	// InteractionCount is the client for interacting with the InteractionCount builders.
+	InteractionCount *InteractionCountClient
+	// InteractionLike is the client for interacting with the InteractionLike builders.
+	InteractionLike *InteractionLikeClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserStatu is the client for interacting with the UserStatu builders.
@@ -58,8 +58,8 @@ func (c *Client) init() {
 	c.Article = NewArticleClient(c.config)
 	c.Category = NewCategoryClient(c.config)
 	c.Comment = NewCommentClient(c.config)
-	c.Interaction_count = NewInteractionCountClient(c.config)
-	c.Interaction_like = NewInteractionLikeClient(c.config)
+	c.InteractionCount = NewInteractionCountClient(c.config)
+	c.InteractionLike = NewInteractionLikeClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserStatu = NewUserStatuClient(c.config)
 }
@@ -152,15 +152,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		Article:           NewArticleClient(cfg),
-		Category:          NewCategoryClient(cfg),
-		Comment:           NewCommentClient(cfg),
-		Interaction_count: NewInteractionCountClient(cfg),
-		Interaction_like:  NewInteractionLikeClient(cfg),
-		User:              NewUserClient(cfg),
-		UserStatu:         NewUserStatuClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Article:          NewArticleClient(cfg),
+		Category:         NewCategoryClient(cfg),
+		Comment:          NewCommentClient(cfg),
+		InteractionCount: NewInteractionCountClient(cfg),
+		InteractionLike:  NewInteractionLikeClient(cfg),
+		User:             NewUserClient(cfg),
+		UserStatu:        NewUserStatuClient(cfg),
 	}, nil
 }
 
@@ -178,15 +178,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		Article:           NewArticleClient(cfg),
-		Category:          NewCategoryClient(cfg),
-		Comment:           NewCommentClient(cfg),
-		Interaction_count: NewInteractionCountClient(cfg),
-		Interaction_like:  NewInteractionLikeClient(cfg),
-		User:              NewUserClient(cfg),
-		UserStatu:         NewUserStatuClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Article:          NewArticleClient(cfg),
+		Category:         NewCategoryClient(cfg),
+		Comment:          NewCommentClient(cfg),
+		InteractionCount: NewInteractionCountClient(cfg),
+		InteractionLike:  NewInteractionLikeClient(cfg),
+		User:             NewUserClient(cfg),
+		UserStatu:        NewUserStatuClient(cfg),
 	}, nil
 }
 
@@ -216,8 +216,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Article, c.Category, c.Comment, c.Interaction_count, c.Interaction_like,
-		c.User, c.UserStatu,
+		c.Article, c.Category, c.Comment, c.InteractionCount, c.InteractionLike, c.User,
+		c.UserStatu,
 	} {
 		n.Use(hooks...)
 	}
@@ -227,8 +227,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Article, c.Category, c.Comment, c.Interaction_count, c.Interaction_like,
-		c.User, c.UserStatu,
+		c.Article, c.Category, c.Comment, c.InteractionCount, c.InteractionLike, c.User,
+		c.UserStatu,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -244,9 +244,9 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	case *CommentMutation:
 		return c.Comment.mutate(ctx, m)
 	case *InteractionCountMutation:
-		return c.Interaction_count.mutate(ctx, m)
+		return c.InteractionCount.mutate(ctx, m)
 	case *InteractionLikeMutation:
-		return c.Interaction_like.mutate(ctx, m)
+		return c.InteractionLike.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	case *UserStatuMutation:
@@ -751,35 +751,35 @@ func (c *CommentClient) mutate(ctx context.Context, m *CommentMutation) (Value, 
 	}
 }
 
-// InteractionCountClient is a client for the Interaction_count schema.
+// InteractionCountClient is a client for the InteractionCount schema.
 type InteractionCountClient struct {
 	config
 }
 
-// NewInteractionCountClient returns a client for the Interaction_count from the given config.
+// NewInteractionCountClient returns a client for the InteractionCount from the given config.
 func NewInteractionCountClient(c config) *InteractionCountClient {
 	return &InteractionCountClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `interaction_count.Hooks(f(g(h())))`.
+// A call to `Use(f, g, h)` equals to `interactioncount.Hooks(f(g(h())))`.
 func (c *InteractionCountClient) Use(hooks ...Hook) {
-	c.hooks.Interaction_count = append(c.hooks.Interaction_count, hooks...)
+	c.hooks.InteractionCount = append(c.hooks.InteractionCount, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `interaction_count.Intercept(f(g(h())))`.
+// A call to `Intercept(f, g, h)` equals to `interactioncount.Intercept(f(g(h())))`.
 func (c *InteractionCountClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Interaction_count = append(c.inters.Interaction_count, interceptors...)
+	c.inters.InteractionCount = append(c.inters.InteractionCount, interceptors...)
 }
 
-// Create returns a builder for creating a Interaction_count entity.
+// Create returns a builder for creating a InteractionCount entity.
 func (c *InteractionCountClient) Create() *InteractionCountCreate {
 	mutation := newInteractionCountMutation(c.config, OpCreate)
 	return &InteractionCountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Interaction_count entities.
+// CreateBulk returns a builder for creating a bulk of InteractionCount entities.
 func (c *InteractionCountClient) CreateBulk(builders ...*InteractionCountCreate) *InteractionCountCreateBulk {
 	return &InteractionCountCreateBulk{config: c.config, builders: builders}
 }
@@ -799,44 +799,44 @@ func (c *InteractionCountClient) MapCreateBulk(slice any, setFunc func(*Interact
 	return &InteractionCountCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Interaction_count.
+// Update returns an update builder for InteractionCount.
 func (c *InteractionCountClient) Update() *InteractionCountUpdate {
 	mutation := newInteractionCountMutation(c.config, OpUpdate)
 	return &InteractionCountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *InteractionCountClient) UpdateOne(_m *Interaction_count) *InteractionCountUpdateOne {
-	mutation := newInteractionCountMutation(c.config, OpUpdateOne, withInteraction_count(_m))
+func (c *InteractionCountClient) UpdateOne(_m *InteractionCount) *InteractionCountUpdateOne {
+	mutation := newInteractionCountMutation(c.config, OpUpdateOne, withInteractionCount(_m))
 	return &InteractionCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
 func (c *InteractionCountClient) UpdateOneID(id uint64) *InteractionCountUpdateOne {
-	mutation := newInteractionCountMutation(c.config, OpUpdateOne, withInteraction_countID(id))
+	mutation := newInteractionCountMutation(c.config, OpUpdateOne, withInteractionCountID(id))
 	return &InteractionCountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Interaction_count.
+// Delete returns a delete builder for InteractionCount.
 func (c *InteractionCountClient) Delete() *InteractionCountDelete {
 	mutation := newInteractionCountMutation(c.config, OpDelete)
 	return &InteractionCountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *InteractionCountClient) DeleteOne(_m *Interaction_count) *InteractionCountDeleteOne {
+func (c *InteractionCountClient) DeleteOne(_m *InteractionCount) *InteractionCountDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *InteractionCountClient) DeleteOneID(id uint64) *InteractionCountDeleteOne {
-	builder := c.Delete().Where(interaction_count.ID(id))
+	builder := c.Delete().Where(interactioncount.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
 	return &InteractionCountDeleteOne{builder}
 }
 
-// Query returns a query builder for Interaction_count.
+// Query returns a query builder for InteractionCount.
 func (c *InteractionCountClient) Query() *InteractionCountQuery {
 	return &InteractionCountQuery{
 		config: c.config,
@@ -845,13 +845,13 @@ func (c *InteractionCountClient) Query() *InteractionCountQuery {
 	}
 }
 
-// Get returns a Interaction_count entity by its id.
-func (c *InteractionCountClient) Get(ctx context.Context, id uint64) (*Interaction_count, error) {
-	return c.Query().Where(interaction_count.ID(id)).Only(ctx)
+// Get returns a InteractionCount entity by its id.
+func (c *InteractionCountClient) Get(ctx context.Context, id uint64) (*InteractionCount, error) {
+	return c.Query().Where(interactioncount.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InteractionCountClient) GetX(ctx context.Context, id uint64) *Interaction_count {
+func (c *InteractionCountClient) GetX(ctx context.Context, id uint64) *InteractionCount {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -861,12 +861,12 @@ func (c *InteractionCountClient) GetX(ctx context.Context, id uint64) *Interacti
 
 // Hooks returns the client hooks.
 func (c *InteractionCountClient) Hooks() []Hook {
-	return c.hooks.Interaction_count
+	return c.hooks.InteractionCount
 }
 
 // Interceptors returns the client interceptors.
 func (c *InteractionCountClient) Interceptors() []Interceptor {
-	return c.inters.Interaction_count
+	return c.inters.InteractionCount
 }
 
 func (c *InteractionCountClient) mutate(ctx context.Context, m *InteractionCountMutation) (Value, error) {
@@ -880,39 +880,39 @@ func (c *InteractionCountClient) mutate(ctx context.Context, m *InteractionCount
 	case OpDelete, OpDeleteOne:
 		return (&InteractionCountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Interaction_count mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown InteractionCount mutation op: %q", m.Op())
 	}
 }
 
-// InteractionLikeClient is a client for the Interaction_like schema.
+// InteractionLikeClient is a client for the InteractionLike schema.
 type InteractionLikeClient struct {
 	config
 }
 
-// NewInteractionLikeClient returns a client for the Interaction_like from the given config.
+// NewInteractionLikeClient returns a client for the InteractionLike from the given config.
 func NewInteractionLikeClient(c config) *InteractionLikeClient {
 	return &InteractionLikeClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `interaction_like.Hooks(f(g(h())))`.
+// A call to `Use(f, g, h)` equals to `interactionlike.Hooks(f(g(h())))`.
 func (c *InteractionLikeClient) Use(hooks ...Hook) {
-	c.hooks.Interaction_like = append(c.hooks.Interaction_like, hooks...)
+	c.hooks.InteractionLike = append(c.hooks.InteractionLike, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `interaction_like.Intercept(f(g(h())))`.
+// A call to `Intercept(f, g, h)` equals to `interactionlike.Intercept(f(g(h())))`.
 func (c *InteractionLikeClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Interaction_like = append(c.inters.Interaction_like, interceptors...)
+	c.inters.InteractionLike = append(c.inters.InteractionLike, interceptors...)
 }
 
-// Create returns a builder for creating a Interaction_like entity.
+// Create returns a builder for creating a InteractionLike entity.
 func (c *InteractionLikeClient) Create() *InteractionLikeCreate {
 	mutation := newInteractionLikeMutation(c.config, OpCreate)
 	return &InteractionLikeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Interaction_like entities.
+// CreateBulk returns a builder for creating a bulk of InteractionLike entities.
 func (c *InteractionLikeClient) CreateBulk(builders ...*InteractionLikeCreate) *InteractionLikeCreateBulk {
 	return &InteractionLikeCreateBulk{config: c.config, builders: builders}
 }
@@ -932,44 +932,44 @@ func (c *InteractionLikeClient) MapCreateBulk(slice any, setFunc func(*Interacti
 	return &InteractionLikeCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Interaction_like.
+// Update returns an update builder for InteractionLike.
 func (c *InteractionLikeClient) Update() *InteractionLikeUpdate {
 	mutation := newInteractionLikeMutation(c.config, OpUpdate)
 	return &InteractionLikeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *InteractionLikeClient) UpdateOne(_m *Interaction_like) *InteractionLikeUpdateOne {
-	mutation := newInteractionLikeMutation(c.config, OpUpdateOne, withInteraction_like(_m))
+func (c *InteractionLikeClient) UpdateOne(_m *InteractionLike) *InteractionLikeUpdateOne {
+	mutation := newInteractionLikeMutation(c.config, OpUpdateOne, withInteractionLike(_m))
 	return &InteractionLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
 func (c *InteractionLikeClient) UpdateOneID(id uint64) *InteractionLikeUpdateOne {
-	mutation := newInteractionLikeMutation(c.config, OpUpdateOne, withInteraction_likeID(id))
+	mutation := newInteractionLikeMutation(c.config, OpUpdateOne, withInteractionLikeID(id))
 	return &InteractionLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Interaction_like.
+// Delete returns a delete builder for InteractionLike.
 func (c *InteractionLikeClient) Delete() *InteractionLikeDelete {
 	mutation := newInteractionLikeMutation(c.config, OpDelete)
 	return &InteractionLikeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *InteractionLikeClient) DeleteOne(_m *Interaction_like) *InteractionLikeDeleteOne {
+func (c *InteractionLikeClient) DeleteOne(_m *InteractionLike) *InteractionLikeDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *InteractionLikeClient) DeleteOneID(id uint64) *InteractionLikeDeleteOne {
-	builder := c.Delete().Where(interaction_like.ID(id))
+	builder := c.Delete().Where(interactionlike.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
 	return &InteractionLikeDeleteOne{builder}
 }
 
-// Query returns a query builder for Interaction_like.
+// Query returns a query builder for InteractionLike.
 func (c *InteractionLikeClient) Query() *InteractionLikeQuery {
 	return &InteractionLikeQuery{
 		config: c.config,
@@ -978,13 +978,13 @@ func (c *InteractionLikeClient) Query() *InteractionLikeQuery {
 	}
 }
 
-// Get returns a Interaction_like entity by its id.
-func (c *InteractionLikeClient) Get(ctx context.Context, id uint64) (*Interaction_like, error) {
-	return c.Query().Where(interaction_like.ID(id)).Only(ctx)
+// Get returns a InteractionLike entity by its id.
+func (c *InteractionLikeClient) Get(ctx context.Context, id uint64) (*InteractionLike, error) {
+	return c.Query().Where(interactionlike.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InteractionLikeClient) GetX(ctx context.Context, id uint64) *Interaction_like {
+func (c *InteractionLikeClient) GetX(ctx context.Context, id uint64) *InteractionLike {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -994,12 +994,12 @@ func (c *InteractionLikeClient) GetX(ctx context.Context, id uint64) *Interactio
 
 // Hooks returns the client hooks.
 func (c *InteractionLikeClient) Hooks() []Hook {
-	return c.hooks.Interaction_like
+	return c.hooks.InteractionLike
 }
 
 // Interceptors returns the client interceptors.
 func (c *InteractionLikeClient) Interceptors() []Interceptor {
-	return c.inters.Interaction_like
+	return c.inters.InteractionLike
 }
 
 func (c *InteractionLikeClient) mutate(ctx context.Context, m *InteractionLikeMutation) (Value, error) {
@@ -1013,7 +1013,7 @@ func (c *InteractionLikeClient) mutate(ctx context.Context, m *InteractionLikeMu
 	case OpDelete, OpDeleteOne:
 		return (&InteractionLikeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Interaction_like mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown InteractionLike mutation op: %q", m.Op())
 	}
 }
 
@@ -1350,11 +1350,11 @@ func (c *UserStatuClient) mutate(ctx context.Context, m *UserStatuMutation) (Val
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Article, Category, Comment, Interaction_count, Interaction_like, User,
+		Article, Category, Comment, InteractionCount, InteractionLike, User,
 		UserStatu []ent.Hook
 	}
 	inters struct {
-		Article, Category, Comment, Interaction_count, Interaction_like, User,
+		Article, Category, Comment, InteractionCount, InteractionLike, User,
 		UserStatu []ent.Interceptor
 	}
 )

@@ -114,7 +114,7 @@ func ToUserInfos(users []*entity.User) []*UserInfo {
 }
 
 // ToGetProfileResponse 用户 + 统计信息 转个人主页响应
-func ToGetProfileResponse(u *entity.User, statu *entity.Status, commentCount uint64) *GetProfileResponse {
+func ToGetProfileResponse(u *entity.User, statu *entity.UserStatus, commentCount uint64) *GetProfileResponse {
 	if u == nil {
 		return nil
 	}

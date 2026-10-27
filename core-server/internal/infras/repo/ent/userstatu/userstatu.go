@@ -38,6 +38,8 @@ const (
 	FieldReceiveFollowCount = "receive_follow_count"
 	// FieldViewCount holds the string denoting the view_count field in the database.
 	FieldViewCount = "view_count"
+	// FieldCommentCount holds the string denoting the comment_count field in the database.
+	FieldCommentCount = "comment_count"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the userstatu in the database.
@@ -66,6 +68,7 @@ var Columns = []string{
 	FieldFollowCount,
 	FieldReceiveFollowCount,
 	FieldViewCount,
+	FieldCommentCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -101,6 +104,8 @@ var (
 	DefaultReceiveFollowCount uint64
 	// DefaultViewCount holds the default value on creation for the "view_count" field.
 	DefaultViewCount uint64
+	// DefaultCommentCount holds the default value on creation for the "comment_count" field.
+	DefaultCommentCount uint64
 )
 
 // OrderOption defines the ordering options for the UserStatu queries.
@@ -169,6 +174,11 @@ func ByReceiveFollowCount(opts ...sql.OrderTermOption) OrderOption {
 // ByViewCount orders the results by the view_count field.
 func ByViewCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldViewCount, opts...).ToFunc()
+}
+
+// ByCommentCount orders the results by the comment_count field.
+func ByCommentCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCommentCount, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

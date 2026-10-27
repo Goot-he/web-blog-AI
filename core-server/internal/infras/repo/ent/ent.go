@@ -7,8 +7,8 @@ import (
 	"core-server/internal/infras/repo/ent/article"
 	"core-server/internal/infras/repo/ent/category"
 	"core-server/internal/infras/repo/ent/comment"
-	"core-server/internal/infras/repo/ent/interaction_count"
-	"core-server/internal/infras/repo/ent/interaction_like"
+	"core-server/internal/infras/repo/ent/interactioncount"
+	"core-server/internal/infras/repo/ent/interactionlike"
 	"core-server/internal/infras/repo/ent/user"
 	"core-server/internal/infras/repo/ent/userstatu"
 	"errors"
@@ -79,13 +79,13 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			article.Table:           article.ValidColumn,
-			category.Table:          category.ValidColumn,
-			comment.Table:           comment.ValidColumn,
-			interaction_count.Table: interaction_count.ValidColumn,
-			interaction_like.Table:  interaction_like.ValidColumn,
-			user.Table:              user.ValidColumn,
-			userstatu.Table:         userstatu.ValidColumn,
+			article.Table:          article.ValidColumn,
+			category.Table:         category.ValidColumn,
+			comment.Table:          comment.ValidColumn,
+			interactioncount.Table: interactioncount.ValidColumn,
+			interactionlike.Table:  interactionlike.ValidColumn,
+			user.Table:             user.ValidColumn,
+			userstatu.Table:        userstatu.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

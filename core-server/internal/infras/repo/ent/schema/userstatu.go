@@ -4,13 +4,23 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // UserStatu holds the schema definition for the UserStatu entity.
 type UserStatu struct {
 	ent.Schema
+}
+
+// Annotations of the UserStatu.
+func (UserStatu) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
+	}
 }
 
 // Fields of the UserStatu.
@@ -30,6 +40,7 @@ func (UserStatu) Fields() []ent.Field {
 		field.Uint64("follow_count").Default(0).Comment("关注量"),
 		field.Uint64("receive_follow_count").Default(0).Comment("粉丝量"),
 		field.Uint64("view_count").Default(0).Comment("被浏览量"),
+		field.Uint64("comment_count").Default(0).Comment("评论数量"),
 	}
 }
 
@@ -37,5 +48,13 @@ func (UserStatu) Fields() []ent.Field {
 func (UserStatu) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).Ref("statu").Field("user_id").Unique().Required(),
+	}
+}
+
+// Indexes of the UserStatu.
+func (UserStatu) Indexes() []ent.Index {
+	return []ent.Index{
+		// 每个用户只能有一条统计记录
+		index.Fields("user_id").Unique().StorageKey("uk_user_status_user"),
 	}
 }

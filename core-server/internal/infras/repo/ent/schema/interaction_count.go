@@ -4,38 +4,49 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
 
-// Interaction_count holds the schema definition for the Interaction_count entity.
-type Interaction_count struct {
+// InteractionCount holds the schema definition for the InteractionCount entity.
+type InteractionCount struct {
 	ent.Schema
 }
 
-// Fields of the Interaction_count.
-func (Interaction_count) Fields() []ent.Field {
-	return []ent.Field{
-		// id 创建、更新、删除时间 对象类型 对象id 互动类型 数量
-		field.Uint64("id").Comment("编号"),
-		field.Time("created_at").Default(time.Now).Comment("创建时间"),
-		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
-		field.Time("deleted_at").Optional().Nillable().Comment("删除时间"),
-
-		field.Enum("object_type").Values("article", "comment", "life").Comment("对象类型"),
-		field.Uint64("object_id").Comment("对象ID"),
-		field.Enum("interaction_type").Values("like", "comment", "favor", "unknown").Optional().Default("unknown").Comment("互动类型"),
-		field.Uint64("count").Default(0).Comment("计数"),
+// Annotations keeps Ent mapped to the existing table used by the SQLX repository.
+func (InteractionCount) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Table: "interaction_count", Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
 	}
 }
 
-// Edges of the Interaction_count.
-func (Interaction_count) Edges() []ent.Edge {
-	return nil
-} // 固定的静态关系才需要创建边 像这里的一对多或者多对多的关系不需要创建边
+// Fields of the InteractionCount.
+func (InteractionCount) Fields() []ent.Field {
+	return []ent.Field{
+		field.Uint64("id"),
 
-func (Interaction_count) Indexes() []ent.Index {
+		field.Time("created_at").Immutable().Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+
+		field.Uint64("object_id").Comment("对象ID 例如文章ID"),
+		field.Enum("object_type").Values("article", "comment", "life").Immutable().Comment("对象类型"),
+		field.Enum("interaction_type").Values("like", "comment", "view", "favor").Immutable().Comment("交互类型"),
+		field.Int("count").Default(0).Comment("计数值"),
+	}
+}
+
+// Edges of the InteractionCount.
+func (InteractionCount) Edges() []ent.Edge {
+	return nil
+	// 固定的静态关系才需要创建边
+}
+
+func (InteractionCount) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("object_type", "object_id", "interaction_type").Unique().StorageKey("interaction_object_type_id"), // 创建联合唯一索引
+		index.Fields("object_id", "object_type", "interaction_type").
+			Unique().                // 创建唯一约束 不可重复
+			StorageKey("uk_object"), // 指定索引名
 	}
 }

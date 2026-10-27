@@ -30,6 +30,34 @@ func pageLimitOffset(page, size uint32) (limit, offset int) {
 	return int(size), int(uint64(page-1) * uint64(size))
 }
 
+// limitOffset 兜底 domain 层传入的 limit/offset（limit 默认 10、上限 100，offset 不能为负）
+func limitOffset(limit, offset int32) (int, int) {
+	if limit <= 0 {
+		limit = int32(defaultPageSize)
+	}
+	if limit > int32(maxPageSize) {
+		limit = int32(maxPageSize)
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	return int(limit), int(offset)
+}
+
+// normalizeOffsetLimit 兜底 offset/limit（offset 不能为负，limit 默认 10、上限 100）
+func normalizeOffsetLimit(offset, limit int) (int, int) {
+	if offset < 0 {
+		offset = 0
+	}
+	if limit <= 0 {
+		limit = int(defaultPageSize)
+	}
+	if limit > int(maxPageSize) {
+		limit = int(maxPageSize)
+	}
+	return offset, limit
+}
+
 // nullTime 把 ent 的可空时间（*time.Time）转成 entity 的 sql.NullTime
 func nullTime(t *time.Time) sql.NullTime {
 	if t == nil {
@@ -167,12 +195,12 @@ func toArticleAggregates(articles []*ent.Article) []*aggregate.ArticleAggregate 
 	return aggs
 }
 
-// toEntityUserStatu 把 ent.UserStatu 转成 entity.Status
-func toEntityUserStatu(s *ent.UserStatu) *entity.Status {
+// toEntityUserStatu 把 ent.UserStatu 转成 entity.UserStatus
+func toEntityUserStatu(s *ent.UserStatu) *entity.UserStatus {
 	if s == nil {
 		return nil
 	}
-	return &entity.Status{
+	return &entity.UserStatus{
 		ID:                 uint64(s.ID), // user_statu 的主键是 int
 		CreatedAt:          s.CreatedAt,
 		UpdatedAt:          s.UpdatedAt,
@@ -186,6 +214,7 @@ func toEntityUserStatu(s *ent.UserStatu) *entity.Status {
 		FollowCount:        s.FollowCount,
 		ReceiveFollowCount: s.ReceiveFollowCount,
 		ViewCount:          s.ViewCount,
+		CommentCount:       s.CommentCount,
 	}
 }
 
@@ -242,6 +271,57 @@ func toEntSex(s enum.Sex) user.Sex {
 }
 
 // toEntStatus 领域模型的用户状态枚举转成 ent 的枚举
-func toEntStatus(s enum.Status) user.Status {
+func toEntStatus(s enum.UserStatus) user.Status {
 	return user.Status(string(s))
+}
+
+// toEntRole 数字角色枚举转成 ent 的字符串枚举（数据库只支持 admin/user）
+func toEntRole(r enum.Role) user.Role {
+	if r == enum.RoleAdmin {
+		return user.RoleAdmin
+	}
+	return user.RoleUser
+}
+
+func toEntityLike(node *ent.InteractionLike) *entity.InteractionLike {
+	if node == nil {
+		return nil
+	}
+	return &entity.InteractionLike{
+		ID:         node.ID,
+		ObjectType: enum.ParseObjectType(node.ObjectType.String()),
+		ObjectID:   node.ObjectID,
+		LikeStatus: entity.ParseInteractionLikeType(node.Status.String()),
+		UserID:     node.UserID,
+		Version:    node.Version,
+	}
+}
+
+func toEntityLikes(likes []*ent.InteractionLike) []*entity.InteractionLike {
+	items := make([]*entity.InteractionLike, 0, len(likes))
+	for _, l := range likes {
+		items = append(items, toEntityLike(l))
+	}
+	return items
+}
+
+func toEntityInteractionCount(interactionCount *ent.InteractionCount) *entity.InteractionCount {
+	if interactionCount == nil {
+		return nil
+	}
+	return &entity.InteractionCount{
+		ID:              interactionCount.ID,
+		ObjectID:        interactionCount.ObjectID,
+		ObjectType:      enum.ParseObjectType(interactionCount.ObjectType.String()),
+		InteractionType: enum.ParseInteractionType(interactionCount.InteractionType.String()),
+		Count:           interactionCount.Count,
+	}
+}
+
+func toEntityInteractionCounts(interactionCount []*ent.InteractionCount) []*entity.InteractionCount {
+	items := make([]*entity.InteractionCount, 0, len(interactionCount))
+	for _, i := range interactionCount {
+		items = append(items, toEntityInteractionCount(i))
+	}
+	return items
 }

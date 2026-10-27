@@ -115,6 +115,11 @@ func ViewCount(v uint64) predicate.UserStatu {
 	return predicate.UserStatu(sql.FieldEQ(FieldViewCount, v))
 }
 
+// CommentCount applies equality check predicate on the "comment_count" field. It's identical to CommentCountEQ.
+func CommentCount(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldEQ(FieldCommentCount, v))
+}
+
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v uint64) predicate.UserStatu {
 	return predicate.UserStatu(sql.FieldEQ(FieldUserID, v))
@@ -583,6 +588,46 @@ func ViewCountLT(v uint64) predicate.UserStatu {
 // ViewCountLTE applies the LTE predicate on the "view_count" field.
 func ViewCountLTE(v uint64) predicate.UserStatu {
 	return predicate.UserStatu(sql.FieldLTE(FieldViewCount, v))
+}
+
+// CommentCountEQ applies the EQ predicate on the "comment_count" field.
+func CommentCountEQ(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldEQ(FieldCommentCount, v))
+}
+
+// CommentCountNEQ applies the NEQ predicate on the "comment_count" field.
+func CommentCountNEQ(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldNEQ(FieldCommentCount, v))
+}
+
+// CommentCountIn applies the In predicate on the "comment_count" field.
+func CommentCountIn(vs ...uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldIn(FieldCommentCount, vs...))
+}
+
+// CommentCountNotIn applies the NotIn predicate on the "comment_count" field.
+func CommentCountNotIn(vs ...uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldNotIn(FieldCommentCount, vs...))
+}
+
+// CommentCountGT applies the GT predicate on the "comment_count" field.
+func CommentCountGT(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldGT(FieldCommentCount, v))
+}
+
+// CommentCountGTE applies the GTE predicate on the "comment_count" field.
+func CommentCountGTE(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldGTE(FieldCommentCount, v))
+}
+
+// CommentCountLT applies the LT predicate on the "comment_count" field.
+func CommentCountLT(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldLT(FieldCommentCount, v))
+}
+
+// CommentCountLTE applies the LTE predicate on the "comment_count" field.
+func CommentCountLTE(v uint64) predicate.UserStatu {
+	return predicate.UserStatu(sql.FieldLTE(FieldCommentCount, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

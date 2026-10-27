@@ -7,7 +7,6 @@ import (
 	"core-server/internal/infras/repo/ent"
 	"core-server/internal/infras/repo/ent/article"
 	"core-server/internal/infras/repo/ent/comment"
-	"core-server/internal/infras/repo/ent/predicate"
 	"core-server/internal/model/aggregate"
 	"core-server/internal/model/entity"
 
@@ -22,9 +21,10 @@ func NewCommentRepo(client *EntClient) *CommentRepo {
 	return &CommentRepo{client}
 }
 
-// Create 新建一级评论（校验文章，写入评论并把文章评论数 +1）
-func (r *CommentRepo) Create(ctx context.Context, data *entity.Comment) error {
-	return r.WithTransaction(ctx, func(ctx context.Context) error {
+// CreateComment 新建一级评论（校验文章，文章评论数 +1），返回评论 ID
+func (r *CommentRepo) CreateComment(ctx context.Context, data *entity.Comment) (uint64, error) {
+	var id uint64
+	err := r.WithTransaction(ctx, func(ctx context.Context) error {
 		if err := r.ensureArticleExists(ctx, data.ArticleID); err != nil {
 			return err
 		}
@@ -44,14 +44,17 @@ func (r *CommentRepo) Create(ctx context.Context, data *entity.Comment) error {
 			return err
 		}
 
+		id = created.ID
 		*data = *toEntityComment(created)
 		return nil
 	})
+	return id, err
 }
 
-// CreateReply 新建回复（校验根评论和被回复评论，更新文章评论数和根评论子评论数）
-func (r *CommentRepo) CreateReply(ctx context.Context, data *entity.Comment) error {
-	return r.WithTransaction(ctx, func(ctx context.Context) error {
+// CreateReply 新建回复（校验根评论和被回复评论，文章评论数 +1、根评论子评论数 +1），返回回复 ID
+func (r *CommentRepo) CreateReply(ctx context.Context, data *entity.Comment) (uint64, error) {
+	var id uint64
+	err := r.WithTransaction(ctx, func(ctx context.Context) error {
 		if err := r.ensureArticleExists(ctx, data.ArticleID); err != nil {
 			return err
 		}
@@ -102,32 +105,31 @@ func (r *CommentRepo) CreateReply(ctx context.Context, data *entity.Comment) err
 			return err
 		}
 
-		// 文章评论数 +1，根评论的子评论数 +1
+		// 文章评论数 +1
 		if err = r.DB(ctx).Article.UpdateOneID(data.ArticleID).
 			AddCommentCount(1).
 			Exec(ctx); err != nil {
 			return err
 		}
+		// 根评论的子评论数 +1
 		if err = r.DB(ctx).Comment.UpdateOneID(root.ID).
 			AddChildCount(1).
 			Exec(ctx); err != nil {
 			return err
 		}
 
+		id = created.ID
 		*data = *toEntityComment(created)
 		return nil
 	})
+	return id, err
 }
 
-// Delete 软删除评论（评论作者本人或文章作者可删，一级评论会连同回复一起删）
-func (r *CommentRepo) Delete(ctx context.Context, commentID, userID, articleID uint64) error {
+// SoftDelete 软删除评论（评论作者或文章作者可删；一级评论连同回复一起删）
+func (r *CommentRepo) SoftDelete(ctx context.Context, id, userID uint64) error {
 	return r.WithTransaction(ctx, func(ctx context.Context) error {
 		target, err := r.DB(ctx).Comment.Query().
-			Where(
-				comment.IDEQ(commentID),
-				comment.ArticleIDEQ(articleID),
-				comment.DeletedAtIsNil(),
-			).
+			Where(comment.IDEQ(id), comment.DeletedAtIsNil()).
 			Only(ctx)
 		if err != nil {
 			if ent.IsNotFound(err) {
@@ -138,7 +140,7 @@ func (r *CommentRepo) Delete(ctx context.Context, commentID, userID, articleID u
 
 		// 评论作者本人 或 文章作者 才有权限删除
 		articleRow, err := r.DB(ctx).Article.Query().
-			Where(article.IDEQ(articleID), article.DeletedAtIsNil()).
+			Where(article.IDEQ(target.ArticleID), article.DeletedAtIsNil()).
 			Only(ctx)
 		if err != nil {
 			if ent.IsNotFound(err) {
@@ -165,9 +167,7 @@ func (r *CommentRepo) Delete(ctx context.Context, commentID, userID, articleID u
 			deletedCount += int64(replies)
 		} else {
 			// 回复：根评论的子评论数 -1
-			if err = r.DB(ctx).Comment.UpdateOneID(target.RootID).
-				AddChildCount(-1).
-				Exec(ctx); err != nil {
+			if err = r.decChildCount(ctx, target.RootID); err != nil {
 				return err
 			}
 		}
@@ -179,41 +179,126 @@ func (r *CommentRepo) Delete(ctx context.Context, commentID, userID, articleID u
 		}
 
 		// 文章评论数减去被删除的数量
-		return r.DB(ctx).Article.UpdateOneID(articleID).
+		return r.DB(ctx).Article.UpdateOneID(target.ArticleID).
 			AddCommentCount(-deletedCount).
 			Exec(ctx)
 	})
 }
 
-// ListByArticle 分页查询文章下的一级评论（按时间倒序，带评论用户信息）
-func (r *CommentRepo) ListByArticle(ctx context.Context, articleID uint64, page, size uint32) ([]*aggregate.CommentAggregate, error) {
-	return r.list(ctx, page, size,
-		[]predicate.Comment{
+// SoftDeleteRepliesByRoot 软删除某个根评论下的全部回复，返回删除数量
+func (r *CommentRepo) SoftDeleteRepliesByRoot(ctx context.Context, rootID uint64) (int64, error) {
+	var deleted int64
+	err := r.WithTransaction(ctx, func(ctx context.Context) error {
+		root, err := r.DB(ctx).Comment.Query().
+			Where(comment.IDEQ(rootID), comment.DeletedAtIsNil()).
+			Only(ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return ErrorCommentNotFound
+			}
+			return err
+		}
+
+		n, err := r.DB(ctx).Comment.Update().
+			Where(comment.RootIDEQ(rootID), comment.DeletedAtIsNil()).
+			SetDeletedAt(time.Now()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		deleted = int64(n)
+
+		if deleted > 0 {
+			if err = r.DB(ctx).Article.UpdateOneID(root.ArticleID).
+				AddCommentCount(-deleted).
+				Exec(ctx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return deleted, err
+}
+
+// GetByID 查询单条评论（带评论用户信息）
+func (r *CommentRepo) GetByID(ctx context.Context, id uint64) (*aggregate.CommentAggregate, error) {
+	data, err := r.DB(ctx).Comment.Query().
+		Where(comment.IDEQ(id), comment.DeletedAtIsNil()).
+		WithUser().
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, ErrorCommentNotFound
+		}
+		return nil, err
+	}
+	return toCommentAggregate(data), nil
+}
+
+// ListByIDs 按 ID 批量查询评论（带评论用户信息）
+func (r *CommentRepo) ListByIDs(ctx context.Context, ids []uint64) ([]*aggregate.CommentAggregate, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	comments, err := r.DB(ctx).Comment.Query().
+		Where(comment.IDIn(ids...), comment.DeletedAtIsNil()).
+		Order(comment.ByID(sql.OrderAsc())).
+		WithUser().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return toCommentAggregates(comments), nil
+}
+
+// IncrementChildCount 根评论的子评论数 +1
+func (r *CommentRepo) IncrementChildCount(ctx context.Context, rootID uint64) error {
+	return r.DB(ctx).Comment.UpdateOneID(rootID).AddChildCount(1).Exec(ctx)
+}
+
+// DecrementChildCount 根评论的子评论数 -1（已经为 0 时不处理）
+func (r *CommentRepo) DecrementChildCount(ctx context.Context, rootID uint64) error {
+	return r.decChildCount(ctx, rootID)
+}
+
+// decChildCount 子评论数 -1，用条件更新避免无符号字段下溢
+func (r *CommentRepo) decChildCount(ctx context.Context, rootID uint64) error {
+	_, err := r.DB(ctx).Comment.Update().
+		Where(comment.IDEQ(rootID), comment.ChildCountGT(0)).
+		AddChildCount(-1).
+		Save(ctx)
+	return err
+}
+
+// ListTopByArticle 分页查询文章下的一级评论（按时间倒序）
+func (r *CommentRepo) ListTopByArticle(ctx context.Context, articleID uint64, offset, limit int) ([]*aggregate.CommentAggregate, error) {
+	offset, limit = normalizeOffsetLimit(offset, limit)
+	comments, err := r.DB(ctx).Comment.Query().
+		Where(
 			comment.ArticleIDEQ(articleID),
 			comment.RootIDEQ(0),
 			comment.DeletedAtIsNil(),
-		},
-		comment.ByCreatedAt(sql.OrderDesc()),
-	)
+		).
+		Order(comment.ByCreatedAt(sql.OrderDesc())).
+		Offset(offset).
+		Limit(limit).
+		WithUser().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return toCommentAggregates(comments), nil
 }
 
-// ListByRoot 分页查询根评论下的回复（按时间正序，带评论用户信息）
-func (r *CommentRepo) ListByRoot(ctx context.Context, rootID uint64, page, size uint32) ([]*aggregate.CommentAggregate, error) {
-	return r.list(ctx, page, size,
-		[]predicate.Comment{
+// ListRepliesByRoot 分页查询根评论下的回复（按时间正序）
+func (r *CommentRepo) ListRepliesByRoot(ctx context.Context, rootID uint64, offset, limit int) ([]*aggregate.CommentAggregate, error) {
+	offset, limit = normalizeOffsetLimit(offset, limit)
+	comments, err := r.DB(ctx).Comment.Query().
+		Where(
 			comment.RootIDEQ(rootID),
 			comment.DeletedAtIsNil(),
-		},
-		comment.ByCreatedAt(sql.OrderAsc()),
-	)
-}
-
-// list 评论列表的公共实现（分页、排序、预加载用户、转聚合）
-func (r *CommentRepo) list(ctx context.Context, page, size uint32, preds []predicate.Comment, order comment.OrderOption) ([]*aggregate.CommentAggregate, error) {
-	limit, offset := pageLimitOffset(page, size)
-	comments, err := r.DB(ctx).Comment.Query().
-		Where(preds...).
-		Order(order).
+		).
+		Order(comment.ByCreatedAt(sql.OrderAsc())).
 		Offset(offset).
 		Limit(limit).
 		WithUser().

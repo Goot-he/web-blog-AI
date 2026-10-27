@@ -9,4 +9,6 @@ var SetService = wire.NewSet(
 	NewUserService,
 	NewCategoryService,
 	NewCommentService,
+	NewCountService,
+	NewLikeService,
 )

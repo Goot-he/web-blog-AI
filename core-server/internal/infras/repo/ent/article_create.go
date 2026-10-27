@@ -123,14 +123,6 @@ func (_c *ArticleCreate) SetCategoryID(v uint64) *ArticleCreate {
 	return _c
 }
 
-// SetNillableCategoryID sets the "category_id" field if the given value is not nil.
-func (_c *ArticleCreate) SetNillableCategoryID(v *uint64) *ArticleCreate {
-	if v != nil {
-		_c.SetCategoryID(*v)
-	}
-	return _c
-}
-
 // SetIsTop sets the "is_top" field.
 func (_c *ArticleCreate) SetIsTop(v bool) *ArticleCreate {
 	_c.mutation.SetIsTop(v)
@@ -298,10 +290,6 @@ func (_c *ArticleCreate) defaults() {
 	if _, ok := _c.mutation.Coverage(); !ok {
 		v := article.DefaultCoverage
 		_c.mutation.SetCoverage(v)
-	}
-	if _, ok := _c.mutation.CategoryID(); !ok {
-		v := article.DefaultCategoryID
-		_c.mutation.SetCategoryID(v)
 	}
 	if _, ok := _c.mutation.IsTop(); !ok {
 		v := article.DefaultIsTop

@@ -251,6 +251,27 @@ func (_u *UserStatuUpdate) AddViewCount(v int64) *UserStatuUpdate {
 	return _u
 }
 
+// SetCommentCount sets the "comment_count" field.
+func (_u *UserStatuUpdate) SetCommentCount(v uint64) *UserStatuUpdate {
+	_u.mutation.ResetCommentCount()
+	_u.mutation.SetCommentCount(v)
+	return _u
+}
+
+// SetNillableCommentCount sets the "comment_count" field if the given value is not nil.
+func (_u *UserStatuUpdate) SetNillableCommentCount(v *uint64) *UserStatuUpdate {
+	if v != nil {
+		_u.SetCommentCount(*v)
+	}
+	return _u
+}
+
+// AddCommentCount adds value to the "comment_count" field.
+func (_u *UserStatuUpdate) AddCommentCount(v int64) *UserStatuUpdate {
+	_u.mutation.AddCommentCount(v)
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *UserStatuUpdate) SetUser(v *User) *UserStatuUpdate {
 	return _u.SetUserID(v.ID)
@@ -382,6 +403,12 @@ func (_u *UserStatuUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedViewCount(); ok {
 		_spec.AddField(userstatu.FieldViewCount, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.CommentCount(); ok {
+		_spec.SetField(userstatu.FieldCommentCount, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.AddedCommentCount(); ok {
+		_spec.AddField(userstatu.FieldCommentCount, field.TypeUint64, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -654,6 +681,27 @@ func (_u *UserStatuUpdateOne) AddViewCount(v int64) *UserStatuUpdateOne {
 	return _u
 }
 
+// SetCommentCount sets the "comment_count" field.
+func (_u *UserStatuUpdateOne) SetCommentCount(v uint64) *UserStatuUpdateOne {
+	_u.mutation.ResetCommentCount()
+	_u.mutation.SetCommentCount(v)
+	return _u
+}
+
+// SetNillableCommentCount sets the "comment_count" field if the given value is not nil.
+func (_u *UserStatuUpdateOne) SetNillableCommentCount(v *uint64) *UserStatuUpdateOne {
+	if v != nil {
+		_u.SetCommentCount(*v)
+	}
+	return _u
+}
+
+// AddCommentCount adds value to the "comment_count" field.
+func (_u *UserStatuUpdateOne) AddCommentCount(v int64) *UserStatuUpdateOne {
+	_u.mutation.AddCommentCount(v)
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *UserStatuUpdateOne) SetUser(v *User) *UserStatuUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -815,6 +863,12 @@ func (_u *UserStatuUpdateOne) sqlSave(ctx context.Context) (_node *UserStatu, er
 	}
 	if value, ok := _u.mutation.AddedViewCount(); ok {
 		_spec.AddField(userstatu.FieldViewCount, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.CommentCount(); ok {
+		_spec.SetField(userstatu.FieldCommentCount, field.TypeUint64, value)
+	}
+	if value, ok := _u.mutation.AddedCommentCount(); ok {
+		_spec.AddField(userstatu.FieldCommentCount, field.TypeUint64, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

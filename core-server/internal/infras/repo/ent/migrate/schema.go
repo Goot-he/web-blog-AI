@@ -3,6 +3,7 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
@@ -17,7 +18,7 @@ var (
 		{Name: "published_at", Type: field.TypeTime, Nullable: true},
 		{Name: "title", Type: field.TypeString},
 		{Name: "summary", Type: field.TypeString},
-		{Name: "content", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString, SchemaType: map[string]string{"mysql": "longtext"}},
 		{Name: "coverage", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "is_top", Type: field.TypeBool, Nullable: true, Default: false},
 		{Name: "is_published", Type: field.TypeBool, Nullable: true, Default: true},
@@ -25,7 +26,7 @@ var (
 		{Name: "like_count", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "favor_count", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "view_count", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "category_id", Type: field.TypeUint64, Default: 0},
+		{Name: "category_id", Type: field.TypeUint64},
 		{Name: "author_id", Type: field.TypeUint64},
 	}
 	// ArticlesTable holds the schema information for the "articles" table.
@@ -72,7 +73,7 @@ var (
 		{Name: "root_id", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "reply_id", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "reply_user_id", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "content", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString, SchemaType: map[string]string{"mysql": "text"}},
 		{Name: "like_count", Type: field.TypeUint64, Default: 0},
 		{Name: "child_count", Type: field.TypeUint64, Default: 0},
 		{Name: "article_id", Type: field.TypeUint64},
@@ -98,51 +99,50 @@ var (
 			},
 		},
 	}
-	// InteractionCountsColumns holds the columns for the "interaction_counts" table.
-	InteractionCountsColumns = []*schema.Column{
+	// InteractionCountColumns holds the columns for the "interaction_count" table.
+	InteractionCountColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "object_type", Type: field.TypeEnum, Enums: []string{"article", "comment", "life"}},
 		{Name: "object_id", Type: field.TypeUint64},
-		{Name: "interaction_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"like", "comment", "favor", "unknown"}, Default: "unknown"},
-		{Name: "count", Type: field.TypeUint64, Default: 0},
+		{Name: "object_type", Type: field.TypeEnum, Enums: []string{"article", "comment", "life"}},
+		{Name: "interaction_type", Type: field.TypeEnum, Enums: []string{"like", "comment", "view", "favor"}},
+		{Name: "count", Type: field.TypeInt, Default: 0},
 	}
-	// InteractionCountsTable holds the schema information for the "interaction_counts" table.
-	InteractionCountsTable = &schema.Table{
-		Name:       "interaction_counts",
-		Columns:    InteractionCountsColumns,
-		PrimaryKey: []*schema.Column{InteractionCountsColumns[0]},
+	// InteractionCountTable holds the schema information for the "interaction_count" table.
+	InteractionCountTable = &schema.Table{
+		Name:       "interaction_count",
+		Columns:    InteractionCountColumns,
+		PrimaryKey: []*schema.Column{InteractionCountColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "interaction_object_type_id",
+				Name:    "uk_object",
 				Unique:  true,
-				Columns: []*schema.Column{InteractionCountsColumns[4], InteractionCountsColumns[5], InteractionCountsColumns[6]},
+				Columns: []*schema.Column{InteractionCountColumns[3], InteractionCountColumns[4], InteractionCountColumns[5]},
 			},
 		},
 	}
-	// InteractionLikesColumns holds the columns for the "interaction_likes" table.
-	InteractionLikesColumns = []*schema.Column{
+	// InteractionLikeColumns holds the columns for the "interaction_like" table.
+	InteractionLikeColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "object_type", Type: field.TypeEnum, Enums: []string{"article", "comment", "unknown"}, Default: "unknown"},
-		{Name: "object_id", Type: field.TypeUint64},
 		{Name: "user_id", Type: field.TypeUint64},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"unknow", "thump_up", "nothing"}, Default: "nothing"},
+		{Name: "object_type", Type: field.TypeEnum, Enums: []string{"article", "comment", "life"}},
+		{Name: "object_id", Type: field.TypeUint64},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"unknown", "thumb_up", "nothing"}, Default: "nothing"},
+		{Name: "version", Type: field.TypeInt64, Default: 0},
 	}
-	// InteractionLikesTable holds the schema information for the "interaction_likes" table.
-	InteractionLikesTable = &schema.Table{
-		Name:       "interaction_likes",
-		Columns:    InteractionLikesColumns,
-		PrimaryKey: []*schema.Column{InteractionLikesColumns[0]},
+	// InteractionLikeTable holds the schema information for the "interaction_like" table.
+	InteractionLikeTable = &schema.Table{
+		Name:       "interaction_like",
+		Columns:    InteractionLikeColumns,
+		PrimaryKey: []*schema.Column{InteractionLikeColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "user_object_type_id",
+				Name:    "uk_like_user_object",
 				Unique:  true,
-				Columns: []*schema.Column{InteractionLikesColumns[4], InteractionLikesColumns[5], InteractionLikesColumns[6]},
+				Columns: []*schema.Column{InteractionLikeColumns[3], InteractionLikeColumns[4], InteractionLikeColumns[5]},
 			},
 		},
 	}
@@ -153,7 +153,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "birth_date", Type: field.TypeTime, Nullable: true},
-		{Name: "username", Type: field.TypeString},
+		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "avatar", Type: field.TypeString, Nullable: true, Default: ""},
@@ -183,6 +183,7 @@ var (
 		{Name: "follow_count", Type: field.TypeUint64, Default: 0},
 		{Name: "receive_follow_count", Type: field.TypeUint64, Default: 0},
 		{Name: "view_count", Type: field.TypeUint64, Default: 0},
+		{Name: "comment_count", Type: field.TypeUint64, Default: 0},
 		{Name: "user_id", Type: field.TypeUint64},
 	}
 	// UserStatusTable holds the schema information for the "user_status" table.
@@ -193,9 +194,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_status_users_statu",
-				Columns:    []*schema.Column{UserStatusColumns[12]},
+				Columns:    []*schema.Column{UserStatusColumns[13]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uk_user_status_user",
+				Unique:  true,
+				Columns: []*schema.Column{UserStatusColumns[13]},
 			},
 		},
 	}
@@ -204,8 +212,8 @@ var (
 		ArticlesTable,
 		CategoriesTable,
 		CommentsTable,
-		InteractionCountsTable,
-		InteractionLikesTable,
+		InteractionCountTable,
+		InteractionLikeTable,
 		UsersTable,
 		UserStatusTable,
 	}
@@ -214,7 +222,37 @@ var (
 func init() {
 	ArticlesTable.ForeignKeys[0].RefTable = CategoriesTable
 	ArticlesTable.ForeignKeys[1].RefTable = UsersTable
+	ArticlesTable.Annotation = &entsql.Annotation{
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
+	CategoriesTable.Annotation = &entsql.Annotation{
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
 	CommentsTable.ForeignKeys[0].RefTable = ArticlesTable
 	CommentsTable.ForeignKeys[1].RefTable = UsersTable
+	CommentsTable.Annotation = &entsql.Annotation{
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
+	InteractionCountTable.Annotation = &entsql.Annotation{
+		Table:     "interaction_count",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
+	InteractionLikeTable.Annotation = &entsql.Annotation{
+		Table:     "interaction_like",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
+	UsersTable.Annotation = &entsql.Annotation{
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
 	UserStatusTable.ForeignKeys[0].RefTable = UsersTable
+	UserStatusTable.Annotation = &entsql.Annotation{
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_general_ci",
+	}
 }

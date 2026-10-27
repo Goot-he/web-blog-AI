@@ -181,6 +181,20 @@ func (_c *UserStatuCreate) SetNillableViewCount(v *uint64) *UserStatuCreate {
 	return _c
 }
 
+// SetCommentCount sets the "comment_count" field.
+func (_c *UserStatuCreate) SetCommentCount(v uint64) *UserStatuCreate {
+	_c.mutation.SetCommentCount(v)
+	return _c
+}
+
+// SetNillableCommentCount sets the "comment_count" field if the given value is not nil.
+func (_c *UserStatuCreate) SetNillableCommentCount(v *uint64) *UserStatuCreate {
+	if v != nil {
+		_c.SetCommentCount(*v)
+	}
+	return _c
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_c *UserStatuCreate) SetUser(v *User) *UserStatuCreate {
 	return _c.SetUserID(v.ID)
@@ -261,6 +275,10 @@ func (_c *UserStatuCreate) defaults() {
 		v := userstatu.DefaultViewCount
 		_c.mutation.SetViewCount(v)
 	}
+	if _, ok := _c.mutation.CommentCount(); !ok {
+		v := userstatu.DefaultCommentCount
+		_c.mutation.SetCommentCount(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -297,6 +315,9 @@ func (_c *UserStatuCreate) check() error {
 	}
 	if _, ok := _c.mutation.ViewCount(); !ok {
 		return &ValidationError{Name: "view_count", err: errors.New(`ent: missing required field "UserStatu.view_count"`)}
+	}
+	if _, ok := _c.mutation.CommentCount(); !ok {
+		return &ValidationError{Name: "comment_count", err: errors.New(`ent: missing required field "UserStatu.comment_count"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserStatu.user"`)}
@@ -370,6 +391,10 @@ func (_c *UserStatuCreate) createSpec() (*UserStatu, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ViewCount(); ok {
 		_spec.SetField(userstatu.FieldViewCount, field.TypeUint64, value)
 		_node.ViewCount = value
+	}
+	if value, ok := _c.mutation.CommentCount(); ok {
+		_spec.SetField(userstatu.FieldCommentCount, field.TypeUint64, value)
+		_node.CommentCount = value
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

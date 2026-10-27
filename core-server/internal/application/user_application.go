@@ -26,7 +26,8 @@ func NewUserService(userRepo domain.UserDomainRepo) *UserService {
 
 // ListUsers 分页查询用户列表
 func (s *UserService) ListUsers(ctx context.Context, req dto.ListUsersRequest) (*dto.ListUsersResponse, error) {
-	users, total, err := s.UserDomain.List(ctx, req.Page, req.PageSize)
+	offset, limit := pagination(req.Page, req.PageSize)
+	users, total, err := s.UserDomain.List(ctx, int32(limit), int32(offset))
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,8 @@ func (s *UserService) SearchUsers(ctx context.Context, req dto.SearchUsersReques
 	if keyword == "" {
 		return &dto.SearchUsersResponse{}, nil
 	}
-	users, total, err := s.UserDomain.Search(ctx, keyword, req.Page, req.PageSize)
+	offset, limit := pagination(req.Page, req.PageSize)
+	users, total, err := s.UserDomain.Search(ctx, keyword, int32(limit), int32(offset))
 	if err != nil {
 		return nil, err
 	}
@@ -54,19 +56,16 @@ func (s *UserService) SearchUsers(ctx context.Context, req dto.SearchUsersReques
 
 // GetProfile 查询用户个人主页（资料 + 统计信息）
 func (s *UserService) GetProfile(ctx context.Context, req dto.GetProfileRequest) (*dto.GetProfileResponse, error) {
-	user, err := s.UserDomain.GetByID(ctx, req.UserID)
+	agg, err := s.UserDomain.GetUserMsgByID(ctx, req.UserID)
 	if err != nil {
 		return nil, err
 	}
-	statu, err := s.UserDomain.GetStatu(ctx, req.UserID)
-	if err != nil {
-		return nil, err
+
+	var commentCount uint64
+	if agg.Statu != nil {
+		commentCount = agg.Statu.CommentCount
 	}
-	commentCount, err := s.UserDomain.CountComments(ctx, req.UserID)
-	if err != nil {
-		return nil, err
-	}
-	return dto.ToGetProfileResponse(user, statu, commentCount), nil
+	return dto.ToGetProfileResponse(agg.User, agg.Statu, commentCount), nil
 }
 
 // UpdateProfile 更新用户资料

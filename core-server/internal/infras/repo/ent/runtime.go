@@ -6,8 +6,8 @@ import (
 	"core-server/internal/infras/repo/ent/article"
 	"core-server/internal/infras/repo/ent/category"
 	"core-server/internal/infras/repo/ent/comment"
-	"core-server/internal/infras/repo/ent/interaction_count"
-	"core-server/internal/infras/repo/ent/interaction_like"
+	"core-server/internal/infras/repo/ent/interactioncount"
+	"core-server/internal/infras/repo/ent/interactionlike"
 	"core-server/internal/infras/repo/ent/schema"
 	"core-server/internal/infras/repo/ent/user"
 	"core-server/internal/infras/repo/ent/userstatu"
@@ -34,10 +34,6 @@ func init() {
 	articleDescCoverage := articleFields[8].Descriptor()
 	// article.DefaultCoverage holds the default value on creation for the coverage field.
 	article.DefaultCoverage = articleDescCoverage.Default.(string)
-	// articleDescCategoryID is the schema descriptor for category_id field.
-	articleDescCategoryID := articleFields[10].Descriptor()
-	// article.DefaultCategoryID holds the default value on creation for the category_id field.
-	article.DefaultCategoryID = articleDescCategoryID.Default.(uint64)
 	// articleDescIsTop is the schema descriptor for is_top field.
 	articleDescIsTop := articleFields[11].Descriptor()
 	// article.DefaultIsTop holds the default value on creation for the is_top field.
@@ -110,34 +106,38 @@ func init() {
 	commentDescChildCount := commentFields[11].Descriptor()
 	// comment.DefaultChildCount holds the default value on creation for the child_count field.
 	comment.DefaultChildCount = commentDescChildCount.Default.(uint64)
-	interaction_countFields := schema.Interaction_count{}.Fields()
-	_ = interaction_countFields
-	// interaction_countDescCreatedAt is the schema descriptor for created_at field.
-	interaction_countDescCreatedAt := interaction_countFields[1].Descriptor()
-	// interaction_count.DefaultCreatedAt holds the default value on creation for the created_at field.
-	interaction_count.DefaultCreatedAt = interaction_countDescCreatedAt.Default.(func() time.Time)
-	// interaction_countDescUpdatedAt is the schema descriptor for updated_at field.
-	interaction_countDescUpdatedAt := interaction_countFields[2].Descriptor()
-	// interaction_count.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	interaction_count.DefaultUpdatedAt = interaction_countDescUpdatedAt.Default.(func() time.Time)
-	// interaction_count.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	interaction_count.UpdateDefaultUpdatedAt = interaction_countDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// interaction_countDescCount is the schema descriptor for count field.
-	interaction_countDescCount := interaction_countFields[7].Descriptor()
-	// interaction_count.DefaultCount holds the default value on creation for the count field.
-	interaction_count.DefaultCount = interaction_countDescCount.Default.(uint64)
-	interaction_likeFields := schema.Interaction_like{}.Fields()
-	_ = interaction_likeFields
-	// interaction_likeDescCreatedAt is the schema descriptor for created_at field.
-	interaction_likeDescCreatedAt := interaction_likeFields[1].Descriptor()
-	// interaction_like.DefaultCreatedAt holds the default value on creation for the created_at field.
-	interaction_like.DefaultCreatedAt = interaction_likeDescCreatedAt.Default.(func() time.Time)
-	// interaction_likeDescUpdatedAt is the schema descriptor for updated_at field.
-	interaction_likeDescUpdatedAt := interaction_likeFields[2].Descriptor()
-	// interaction_like.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	interaction_like.DefaultUpdatedAt = interaction_likeDescUpdatedAt.Default.(func() time.Time)
-	// interaction_like.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	interaction_like.UpdateDefaultUpdatedAt = interaction_likeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	interactioncountFields := schema.InteractionCount{}.Fields()
+	_ = interactioncountFields
+	// interactioncountDescCreatedAt is the schema descriptor for created_at field.
+	interactioncountDescCreatedAt := interactioncountFields[1].Descriptor()
+	// interactioncount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	interactioncount.DefaultCreatedAt = interactioncountDescCreatedAt.Default.(func() time.Time)
+	// interactioncountDescUpdatedAt is the schema descriptor for updated_at field.
+	interactioncountDescUpdatedAt := interactioncountFields[2].Descriptor()
+	// interactioncount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	interactioncount.DefaultUpdatedAt = interactioncountDescUpdatedAt.Default.(func() time.Time)
+	// interactioncount.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	interactioncount.UpdateDefaultUpdatedAt = interactioncountDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// interactioncountDescCount is the schema descriptor for count field.
+	interactioncountDescCount := interactioncountFields[6].Descriptor()
+	// interactioncount.DefaultCount holds the default value on creation for the count field.
+	interactioncount.DefaultCount = interactioncountDescCount.Default.(int)
+	interactionlikeFields := schema.InteractionLike{}.Fields()
+	_ = interactionlikeFields
+	// interactionlikeDescCreatedAt is the schema descriptor for created_at field.
+	interactionlikeDescCreatedAt := interactionlikeFields[1].Descriptor()
+	// interactionlike.DefaultCreatedAt holds the default value on creation for the created_at field.
+	interactionlike.DefaultCreatedAt = interactionlikeDescCreatedAt.Default.(func() time.Time)
+	// interactionlikeDescUpdatedAt is the schema descriptor for updated_at field.
+	interactionlikeDescUpdatedAt := interactionlikeFields[2].Descriptor()
+	// interactionlike.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	interactionlike.DefaultUpdatedAt = interactionlikeDescUpdatedAt.Default.(func() time.Time)
+	// interactionlike.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	interactionlike.UpdateDefaultUpdatedAt = interactionlikeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// interactionlikeDescVersion is the schema descriptor for version field.
+	interactionlikeDescVersion := interactionlikeFields[7].Descriptor()
+	// interactionlike.DefaultVersion holds the default value on creation for the version field.
+	interactionlike.DefaultVersion = interactionlikeDescVersion.Default.(int64)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCreatedAt is the schema descriptor for created_at field.
@@ -210,4 +210,8 @@ func init() {
 	userstatuDescViewCount := userstatuFields[11].Descriptor()
 	// userstatu.DefaultViewCount holds the default value on creation for the view_count field.
 	userstatu.DefaultViewCount = userstatuDescViewCount.Default.(uint64)
+	// userstatuDescCommentCount is the schema descriptor for comment_count field.
+	userstatuDescCommentCount := userstatuFields[12].Descriptor()
+	// userstatu.DefaultCommentCount holds the default value on creation for the comment_count field.
+	userstatu.DefaultCommentCount = userstatuDescCommentCount.Default.(uint64)
 }

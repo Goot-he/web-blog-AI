@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -11,6 +13,13 @@ import (
 // Category holds the schema definition for the Category entity.
 type Category struct {
 	ent.Schema
+}
+
+// Annotations of the Category.
+func (Category) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
+	}
 }
 
 // Fields of the Category.

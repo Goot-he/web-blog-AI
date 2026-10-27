@@ -4,6 +4,9 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -11,6 +14,13 @@ import (
 // Article holds the schema definition for the Article entity.
 type Article struct {
 	ent.Schema
+}
+
+// Annotations of the Article.
+func (Article) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
+	}
 }
 
 // Fields of the Article.
@@ -27,10 +37,12 @@ func (Article) Fields() []ent.Field {
 
 		field.String("title").Comment("文章标题"),
 		field.String("summary").Comment("文章概述"),
-		field.String("content").Comment("文章正文"),
+		field.String("content").
+			SchemaType(map[string]string{dialect.MySQL: "longtext"}).
+			Comment("文章正文"),
 		field.String("coverage").Optional().Default("").Comment("文章封面"),
 		field.Uint64("author_id").Comment("作者ID"),
-		field.Uint64("category_id").Default(0).Comment("分类ID"),
+		field.Uint64("category_id").Comment("分类ID"),
 
 		field.Bool("is_top").Optional().Default(false).Comment("是否置顶 默认不置顶"),
 		field.Bool("is_published").Optional().Default(true).Comment("是否发布 默认发布"),

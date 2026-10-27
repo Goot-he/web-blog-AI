@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -11,6 +13,13 @@ import (
 // User holds the schema definition for the User entity.
 type User struct {
 	ent.Schema
+}
+
+// Annotations of the User.
+func (User) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
+	}
 }
 
 // Fields of the User.
@@ -22,7 +31,7 @@ func (User) Fields() []ent.Field {
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Comment("更新时间"),
 		field.Time("deleted_at").Optional().Nillable().Comment("删除时间"),
 		field.Time("birth_date").Optional().Nillable().Comment("用户生日"),
-		field.String("username").Comment("用户账号"),
+		field.String("username").Unique().Comment("用户账号"),
 		field.String("password").Comment("用户密码"),
 		field.String("email").Optional().Default("").Comment("用户邮箱"),
 		field.String("avatar").Optional().Default("").Comment("用户头像"),

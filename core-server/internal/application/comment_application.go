@@ -11,10 +11,10 @@ import (
 )
 
 type CommentService struct {
-	CommentDomain domain.CommentDomainRepo
+	CommentDomain domain.CommentRepoDomain
 }
 
-func NewCommentService(commentRepo domain.CommentDomainRepo) *CommentService {
+func NewCommentService(commentRepo domain.CommentRepoDomain) *CommentService {
 	return &CommentService{
 		CommentDomain: commentRepo,
 	}
@@ -29,11 +29,12 @@ func (s *CommentService) CreateComment(ctx context.Context, req dto.CreateCommen
 	if req.ArticleID == 0 || req.UserID == 0 {
 		return errors.New("articleID and userID are required")
 	}
-	return s.CommentDomain.Create(ctx, &entity.Comment{
+	_, err := s.CommentDomain.CreateComment(ctx, &entity.Comment{
 		ArticleID:     req.ArticleID,
 		PublishUserID: req.UserID,
 		Comment:       content,
 	})
+	return err
 }
 
 // CreateReply 回复某条评论
@@ -45,21 +46,22 @@ func (s *CommentService) CreateReply(ctx context.Context, req dto.CreateReplyReq
 	if req.RootID == 0 || req.ReplyToID == 0 || req.ArticleID == 0 || req.UserID == 0 {
 		return errors.New("rootID, replyToID, articleID and userID are required")
 	}
-	return s.CommentDomain.CreateReply(ctx, &entity.Comment{
+	_, err := s.CommentDomain.CreateReply(ctx, &entity.Comment{
 		ArticleID:     req.ArticleID,
 		PublishUserID: req.UserID,
 		RootID:        req.RootID,
 		ReplyToID:     req.ReplyToID,
 		Comment:       content,
 	})
+	return err
 }
 
 // DeleteComment 删除评论（评论作者或文章作者可删）
 func (s *CommentService) DeleteComment(ctx context.Context, req dto.DeleteCommentRequest) error {
-	if req.ID == 0 || req.UserID == 0 || req.ArticleID == 0 {
-		return errors.New("id, userID and articleID are required")
+	if req.ID == 0 || req.UserID == 0 {
+		return errors.New("id and userID are required")
 	}
-	return s.CommentDomain.Delete(ctx, req.ID, req.UserID, req.ArticleID)
+	return s.CommentDomain.SoftDelete(ctx, req.ID, req.UserID)
 }
 
 // GetArticleComments 分页查询文章下的一级评论
@@ -67,7 +69,8 @@ func (s *CommentService) GetArticleComments(ctx context.Context, req dto.GetArti
 	if req.ArticleID == 0 {
 		return nil, errors.New("articleID is required")
 	}
-	comments, err := s.CommentDomain.ListByArticle(ctx, req.ArticleID, req.Page, req.Size)
+	offset, limit := pagination(req.Page, req.Size)
+	comments, err := s.CommentDomain.ListTopByArticle(ctx, req.ArticleID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +86,8 @@ func (s *CommentService) GetCommentReplies(ctx context.Context, req dto.GetComme
 	if req.RootID == 0 {
 		return nil, errors.New("rootID is required")
 	}
-	replies, err := s.CommentDomain.ListByRoot(ctx, req.RootID, req.Page, req.Size)
+	offset, limit := pagination(req.Page, req.Size)
+	replies, err := s.CommentDomain.ListRepliesByRoot(ctx, req.RootID, offset, limit)
 	if err != nil {
 		return nil, err
 	}

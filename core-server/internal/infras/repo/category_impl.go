@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"core-server/internal/infras/repo/ent"
 	"core-server/internal/infras/repo/ent/category"
 	"core-server/internal/infras/repo/ent/predicate"
 	"core-server/internal/model/entity"
@@ -23,46 +22,54 @@ func NewCategoryRepo(client *EntClient) *CategoryRepo {
 	return &CategoryRepo{client}
 }
 
-// Create 新建分类（ParentID 为 0 表示一级类型，否则是二级分类）
-func (r *CategoryRepo) Create(ctx context.Context, data *entity.Category) error {
-	created, err := r.DB(ctx).Category.Create().
-		SetCategory(data.Category).
-		SetTypeID(data.ParentID).
-		Save(ctx)
-	if err != nil {
-		return err
-	}
-	data.ID = created.ID
-	data.CreatedAt = created.CreatedAt
-	data.UpdatedAt = created.UpdatedAt
-	return nil
+// CreateType 新建一级类型
+func (r *CategoryRepo) CreateType(ctx context.Context, cate *entity.Category) error {
+	return r.create(ctx, cate, rootCategoryID)
 }
 
-// Delete 软删除二级分类
-func (r *CategoryRepo) Delete(ctx context.Context, categoryID uint64) error {
-	affected, err := r.DB(ctx).Category.Update().
+// CreateCate 新建二级分类（父级必须是一级类型）
+func (r *CategoryRepo) CreateCate(ctx context.Context, cate *entity.Category) error {
+	if cate.ParentID == rootCategoryID {
+		return ErrorInvalidParam
+	}
+	exists, err := r.DB(ctx).Category.Query().
 		Where(
-			category.IDEQ(categoryID),
-			category.TypeIDNEQ(rootCategoryID), // 只允许删二级分类
+			category.IDEQ(cate.ParentID),
+			category.TypeIDEQ(rootCategoryID),
 			category.DeletedAtIsNil(),
 		).
-		SetDeletedAt(time.Now()).
+		Exist(ctx)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return ErrorCategoryNotFound
+	}
+	return r.create(ctx, cate, cate.ParentID)
+}
+
+// create 插入分类并把生成的字段回填给调用方
+func (r *CategoryRepo) create(ctx context.Context, cate *entity.Category, parentID uint64) error {
+	created, err := r.DB(ctx).Category.Create().
+		SetCategory(cate.Category).
+		SetTypeID(parentID).
 		Save(ctx)
 	if err != nil {
 		return err
 	}
-	if affected == 0 {
-		return ErrorCategoryNotFound
-	}
+	cate.ID = created.ID
+	cate.ParentID = parentID
+	cate.CreatedAt = created.CreatedAt
+	cate.UpdatedAt = created.UpdatedAt
 	return nil
 }
 
 // DeleteType 软删除一级类型及其下的所有二级分类
-func (r *CategoryRepo) DeleteType(ctx context.Context, typeID uint64) error {
+func (r *CategoryRepo) DeleteType(ctx context.Context, id uint64) error {
 	return r.WithTransaction(ctx, func(ctx context.Context) error {
 		exists, err := r.DB(ctx).Category.Query().
 			Where(
-				category.IDEQ(typeID),
+				category.IDEQ(id),
 				category.TypeIDEQ(rootCategoryID),
 				category.DeletedAtIsNil(),
 			).
@@ -77,27 +84,46 @@ func (r *CategoryRepo) DeleteType(ctx context.Context, typeID uint64) error {
 		now := time.Now()
 		// 先删其下的二级分类
 		if _, err = r.DB(ctx).Category.Update().
-			Where(category.TypeIDEQ(typeID), category.DeletedAtIsNil()).
+			Where(category.TypeIDEQ(id), category.DeletedAtIsNil()).
 			SetDeletedAt(now).
 			Save(ctx); err != nil {
 			return err
 		}
 		// 再删一级类型本身
 		_, err = r.DB(ctx).Category.Update().
-			Where(category.IDEQ(typeID), category.DeletedAtIsNil()).
+			Where(category.IDEQ(id), category.DeletedAtIsNil()).
 			SetDeletedAt(now).
 			Save(ctx)
 		return err
 	})
 }
 
-// ListTypes 查询所有一级类型
-func (r *CategoryRepo) ListTypes(ctx context.Context) ([]*entity.Category, error) {
+// DeleteCate 软删除二级分类
+func (r *CategoryRepo) DeleteCate(ctx context.Context, id uint64) error {
+	affected, err := r.DB(ctx).Category.Update().
+		Where(
+			category.IDEQ(id),
+			category.TypeIDNEQ(rootCategoryID), // 只允许删二级分类
+			category.DeletedAtIsNil(),
+		).
+		SetDeletedAt(time.Now()).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	if affected == 0 {
+		return ErrorCategoryNotFound
+	}
+	return nil
+}
+
+// ListType 查询所有一级类型
+func (r *CategoryRepo) ListType(ctx context.Context) ([]*entity.Category, error) {
 	return r.list(ctx, category.TypeIDEQ(rootCategoryID))
 }
 
-// ListByParent 查询某个一级类型下的所有二级分类
-func (r *CategoryRepo) ListByParent(ctx context.Context, parentID uint64) ([]*entity.Category, error) {
+// ListCate 查询某个一级类型下的所有二级分类
+func (r *CategoryRepo) ListCate(ctx context.Context, parentID uint64) ([]*entity.Category, error) {
 	return r.list(ctx, category.TypeIDEQ(parentID))
 }
 
@@ -111,18 +137,4 @@ func (r *CategoryRepo) list(ctx context.Context, preds ...predicate.Category) ([
 		return nil, err
 	}
 	return toEntityCategories(items), nil
-}
-
-// GetByID 查询单个分类
-func (r *CategoryRepo) GetByID(ctx context.Context, categoryID uint64) (*entity.Category, error) {
-	data, err := r.DB(ctx).Category.Query().
-		Where(category.IDEQ(categoryID), category.DeletedAtIsNil()).
-		Only(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, ErrorCategoryNotFound
-		}
-		return nil, err
-	}
-	return toEntityCategory(data), nil
 }

@@ -11,10 +11,10 @@ import (
 )
 
 type CategoryService struct {
-	CategoryDomain domain.CategoryDomainRepo
+	CategoryDomain domain.CategoryRepoDomain
 }
 
-func NewCategoryService(categoryRepo domain.CategoryDomainRepo) *CategoryService {
+func NewCategoryService(categoryRepo domain.CategoryRepoDomain) *CategoryService {
 	return &CategoryService{
 		CategoryDomain: categoryRepo,
 	}
@@ -26,7 +26,7 @@ func (s *CategoryService) CreateType(ctx context.Context, req dto.CreateTypeRequ
 	if name == "" {
 		return errors.New("type name is required")
 	}
-	return s.CategoryDomain.Create(ctx, &entity.Category{
+	return s.CategoryDomain.CreateType(ctx, &entity.Category{
 		Category: name,
 		ParentID: 0,
 	})
@@ -42,7 +42,7 @@ func (s *CategoryService) DeleteType(ctx context.Context, req dto.DeleteTypeRequ
 
 // ListTypes 查询所有一级类型
 func (s *CategoryService) ListTypes(ctx context.Context, _ dto.ListTypesRequest) (*dto.ListTypesResponse, error) {
-	items, err := s.CategoryDomain.ListTypes(ctx)
+	items, err := s.CategoryDomain.ListType(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -60,16 +60,7 @@ func (s *CategoryService) CreateCategory(ctx context.Context, req dto.CreateCate
 	if req.ParentID == 0 {
 		return errors.New("parentID is required")
 	}
-
-	parent, err := s.CategoryDomain.GetByID(ctx, req.ParentID)
-	if err != nil {
-		return err
-	}
-	if parent.ParentID != 0 {
-		return errors.New("parent category must be a first-level type")
-	}
-
-	return s.CategoryDomain.Create(ctx, &entity.Category{
+	return s.CategoryDomain.CreateCate(ctx, &entity.Category{
 		Category: name,
 		ParentID: req.ParentID,
 	})
@@ -80,7 +71,7 @@ func (s *CategoryService) DeleteCategory(ctx context.Context, req dto.DeleteCate
 	if req.ID == 0 {
 		return errors.New("category id is required")
 	}
-	return s.CategoryDomain.Delete(ctx, req.ID)
+	return s.CategoryDomain.DeleteCate(ctx, req.ID)
 }
 
 // ListCategories 查询某个一级类型下的二级分类
@@ -88,7 +79,7 @@ func (s *CategoryService) ListCategories(ctx context.Context, req dto.ListCatego
 	if req.ParentID == 0 {
 		return &dto.ListCategoriesResponse{}, nil
 	}
-	items, err := s.CategoryDomain.ListByParent(ctx, req.ParentID)
+	items, err := s.CategoryDomain.ListCate(ctx, req.ParentID)
 	if err != nil {
 		return nil, err
 	}

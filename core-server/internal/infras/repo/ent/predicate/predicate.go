@@ -15,11 +15,11 @@ type Category func(*sql.Selector)
 // Comment is the predicate function for comment builders.
 type Comment func(*sql.Selector)
 
-// Interaction_count is the predicate function for interaction_count builders.
-type Interaction_count func(*sql.Selector)
+// InteractionCount is the predicate function for interactioncount builders.
+type InteractionCount func(*sql.Selector)
 
-// Interaction_like is the predicate function for interaction_like builders.
-type Interaction_like func(*sql.Selector)
+// InteractionLike is the predicate function for interactionlike builders.
+type InteractionLike func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

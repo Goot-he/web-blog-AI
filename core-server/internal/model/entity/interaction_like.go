@@ -12,10 +12,11 @@ type InteractionLike struct {
 	UpdatedAt time.Time    `db:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at"`
 
-	ObjectType enum.ObjectType `db:"object_type"`
-	ObjectID   uint64          `db:"object_id"`
-	UserID     uint64          `db:"user_id"`
-	LikeStatus enum.Status     `db:"like_status"`
+	ObjectType enum.ObjectType     `db:"object_type"`
+	ObjectID   uint64              `db:"object_id"`
+	UserID     uint64              `db:"user_id"`
+	LikeStatus InteractionLikeType `db:"like_status"`
+	Version    int64               `db:"version"`
 }
 
 type InteractionLikeType string

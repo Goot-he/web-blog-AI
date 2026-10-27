@@ -7,6 +7,7 @@ const (
 	InteractionTypeLike    InteractionType = "like"
 	InteractionTypeFavor   InteractionType = "favor"
 	InteractionTypeFollow  InteractionType = "follow"
+	InteractionTypeView    InteractionType = "view"
 	InteractionTypeUnknown InteractionType = "unknown"
 )
 
@@ -24,6 +25,8 @@ func ParseInteractionType(s string) InteractionType {
 		return InteractionTypeFavor
 	case "follow":
 		return InteractionTypeFollow
+	case "view":
+		return InteractionTypeView
 	default:
 		return InteractionTypeUnknown
 	}

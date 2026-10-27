@@ -2,28 +2,44 @@ package domain
 
 import (
 	"context"
+	"core-server/internal/model/aggregate"
+	"core-server/internal/model/enum"
 
 	"core-server/internal/model/entity"
-	"core-server/internal/model/enum"
 )
 
 type UserRepo interface {
-	// List 分页查询用户列表（按注册时间倒序）
-	List(ctx context.Context, page, size uint32) ([]*entity.User, uint64, error)
-	// Search 按用户名/邮箱模糊搜索用户
-	Search(ctx context.Context, keyword string, page, size uint32) ([]*entity.User, uint64, error)
-	// GetByID 查询单个用户
-	GetByID(ctx context.Context, userID uint64) (*entity.User, error)
-	// GetStatu 查询用户统计信息（没有记录时返回全 0 的统计）
-	GetStatu(ctx context.Context, userID uint64) (*entity.Status, error)
-	// CountComments 统计用户发表的评论数
-	CountComments(ctx context.Context, userID uint64) (uint64, error)
-	// UpdateProfile 更新用户资料
+	// 有关用户查询的操作
+
+	GetByID(ctx context.Context, id uint64) (*entity.User, error)
+	GetByName(ctx context.Context, name string) (*entity.User, error)
+	GetByEmail(ctx context.Context, email string) (*entity.User, error)
+
+	GetUserMsgByID(ctx context.Context, id uint64) (*aggregate.UserAggregate, error)
+	GetUserStat(ctx context.Context, userID uint64) (*entity.UserStatus, error)
+
+	Search(ctx context.Context, keyword string, limit, offset int32) ([]*entity.User, uint64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entity.User, uint64, error)
+	ListByIDs(ctx context.Context, ids []uint64) ([]*entity.User, error)
+
+	// 有关用户写操作
+
+	CreateUser(ctx context.Context, user *entity.User) error
+
 	UpdateProfile(ctx context.Context, user *entity.User) error
-	// UpdateAvatar 更新用户头像
 	UpdateAvatar(ctx context.Context, userID uint64, avatar string) error
-	// UpdateStatus 更新用户封禁状态
-	UpdateStatus(ctx context.Context, userID uint64, status enum.Status) error
+	UpdatePassword(ctx context.Context, userID uint64, password string) error
+	UpdateStatus(ctx context.Context, userID uint64, status enum.UserStatus) error
+
+	// 个人主页方面的接口
+
+	UpdateLikeCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateReceiveLikeCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateArticleCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateViewCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateCommentCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateFavorCount(ctx context.Context, userID uint64, delta int64) error
+	UpdateReceiveFavorCount(ctx context.Context, userID uint64, delta int64) error
 }
 
 type UserDomainRepo interface {

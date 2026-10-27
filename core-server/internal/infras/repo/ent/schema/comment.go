@@ -4,6 +4,9 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
+	entschema "entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -11,6 +14,13 @@ import (
 // Comment holds the schema definition for the Comment entity.
 type Comment struct {
 	ent.Schema
+}
+
+// Annotations of the Comment.
+func (Comment) Annotations() []entschema.Annotation {
+	return []entschema.Annotation{
+		entsql.Annotation{Charset: "utf8mb4", Collation: "utf8mb4_general_ci"},
+	}
 }
 
 // Fields of the Comment.
@@ -27,7 +37,9 @@ func (Comment) Fields() []ent.Field {
 		field.Uint64("root_id").Optional().Default(0).Comment("根评论ID"),
 		field.Uint64("reply_id").Optional().Default(0).Comment("回复的评论ID"),
 		field.Uint64("reply_user_id").Optional().Default(0).Comment("回复的用户的ID"),
-		field.String("content").Comment("评论内容"),
+		field.String("content").
+			SchemaType(map[string]string{dialect.MySQL: "text"}).
+			Comment("评论内容"),
 		field.Uint64("like_count").Default(0).Comment("评论点赞量"),
 		field.Uint64("child_count").Default(0).Comment("评论下的子评论数量"),
 	}
