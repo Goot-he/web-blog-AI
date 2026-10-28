@@ -55,7 +55,7 @@ func (r *ArticleService) EditorArticle(ctx context.Context, req dto.EditorArticl
 }
 
 func (r *ArticleService) DeleteArticle(ctx context.Context, req dto.DeleteArticleRequest) error {
-	err := r.ArtDomain.Delete(ctx, req.ID, req.UserID)
+	err := r.ArtDomain.Delete(ctx, req.ID, req.UserID, req.Role)
 	if err != nil {
 		return err
 	}

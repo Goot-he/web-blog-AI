@@ -8,8 +8,8 @@ import (
 )
 
 type CommentRepo interface {
-	CreateComment(ctx context.Context, comment *entity.Comment) (uint64, error)
-	CreateReply(ctx context.Context, comment *entity.Comment) (uint64, error)
+	CreateComment(ctx context.Context, data *entity.Comment) (uint64, error)
+	CreateReply(ctx context.Context, data *entity.Comment) (uint64, error)
 	SoftDelete(ctx context.Context, id, userID uint64) error
 	SoftDeleteRepliesByRoot(ctx context.Context, rootID uint64) (int64, error)
 

@@ -94,7 +94,7 @@ func (r *LikeRepo) CountUserLiked(ctx context.Context, userID, objectID uint64, 
 }
 
 // PageQueryLikeObjects 分页返回批量数据
-func (r *LikeRepo) PageQueryLikeObjects(ctx context.Context, userID uint64, objectType enum.ObjectType, page, size int) ([]*entity.InteractionLike, error) {
+func (r *LikeRepo) PageQueryLikeObjects(ctx context.Context, userID uint64, objectType enum.ObjectType, offset, limit int) ([]*entity.InteractionLike, error) {
 	nodes, err := r.DB(ctx).InteractionLike.Query().Where(
 		interactionlike.UserIDEQ(userID),
 		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType.String()))).
@@ -103,8 +103,8 @@ func (r *LikeRepo) PageQueryLikeObjects(ctx context.Context, userID uint64, obje
 			interactionlike.ByUpdatedAt(sql.OrderDesc()),
 			interactionlike.ByID(sql.OrderDesc()),
 		).
-		Offset(page).
-		Limit(size).
+		Offset(offset).
+		Limit(limit).
 		All(ctx)
 	if err != nil {
 		return nil, err

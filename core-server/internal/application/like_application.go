@@ -4,6 +4,7 @@ import (
 	"context"
 	"core-server/internal/config"
 	"core-server/internal/domain"
+	"core-server/internal/infras/clog"
 	"core-server/internal/model/aggregate"
 	"core-server/internal/model/entity"
 	"core-server/internal/model/enum"
@@ -79,8 +80,14 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 			return nil
 		}
 
-		// 这里
-		s.countService.
+		if err := s.countService.UpdateObjectTypeWithInteractionType(ctx, objectType.String(), enum.InteractionTypeLike.String(), objectID, 1); err != nil {
+			return err
+		}
+
+		// 更新用户的点赞数
+		if err := s.userRepo.UpdateLikeCount(ctx, userID, 1); err != nil {
+			return err
+		}
 
 		return nil
 	}); err != nil {
@@ -95,6 +102,54 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 }
 
 func (s *LikeService) CancelThumbUp(ctx context.Context, userID, objectID uint64, objectType enum.ObjectType) error {
+	// 先判断是否处于点赞状态
+	isThumbUp, err := s.HasThumbUp(ctx, userID, objectID, objectType)
+	if err != nil {
+		return err
+	}
+	if !isThumbUp {
+		return nil
+	}
+
+	mark := true
+
+	like := &entity.InteractionLike{
+		ObjectID:   objectID,
+		UserID:     userID,
+		ObjectType: objectType,
+		LikeStatus: entity.LikeStatusTypeNothing,
+		Version:    time.Now().Unix(),
+	}
+
+	if err := s.repo.WithTransaction(ctx, func(ctx context.Context) error {
+		affected, err := s.repo.Upsert(ctx, like)
+		if err != nil {
+			return err
+		}
+		if affected == 0 {
+			mark = false
+			return nil
+		}
+
+		if err := s.countService.UpdateObjectTypeWithInteractionType(ctx, objectType.String(), enum.InteractionTypeLike.String(), objectID, -1); err != nil {
+			return err
+		}
+
+		// 更新用户的点赞数量
+		if err := s.userRepo.UpdateLikeCount(ctx, userID, -1); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	// 这里异步更新作者收到的点赞数
+	if mark {
+		s.asyncUpdateAuthorReceiveLikeCount(objectType, objectID, -1)
+	}
+	return nil
 }
 
 func (s *LikeService) asyncUpdateAuthorReceiveLikeCount(objectType enum.ObjectType, objectID uint64, delta int) {
@@ -135,5 +190,21 @@ func (s *LikeService) getAuthorIdByObject(ctx context.Context, objectType enum.O
 
 // -------------------------------------------------------
 
-func (s *LikeService) UserLikeList(ctx context.Context, userID, objectType enum.ObjectType, page, size uint32) ([]aggregate.ArticleAggregate, error) {
+func (s *LikeService) UserLikeList(ctx context.Context, userID uint64, objectType enum.ObjectType, page, size int) ([]*aggregate.ArticleAggregate, error) {
+	// 大致流程是线 先拿取点赞列表 再通过点赞列表拿取文章
+	limit := (page - 1) * size
+	likes, err := s.repo.PageQueryLikeObjects(ctx, userID, objectType, limit, size)
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]uint64, 0, len(likes))
+	for _, like := range likes {
+		ids = append(ids, like.ObjectID)
+	}
+	articles, err := s.articleRepo.ListByIds(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return articles, nil
 }

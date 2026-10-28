@@ -4,19 +4,20 @@ import (
 	"context"
 	"core-server/internal/model/aggregate"
 	"core-server/internal/model/entity"
+	"core-server/internal/model/enum"
 )
 
 type ArticleRepo interface {
-	Create(ctx context.Context, article *entity.Article) error
-	Editor(ctx context.Context, article *entity.Article) error
-	Delete(ctx context.Context, articleID, authorID uint64) error
+	Create(ctx context.Context, data *entity.Article) error
+	Editor(ctx context.Context, data *entity.Article) error
+	Delete(ctx context.Context, articleID, authorID uint64, roleID enum.Role) error
 
-	DeleteByIds(ctx context.Context, articleIDs []uint64) error
 	PublishDraft(ctx context.Context, articleID, authorID uint64) error
 	DeleteDraft(ctx context.Context, articleID, authorID uint64) error
 
 	GetArticle(ctx context.Context, articleID uint64) (*aggregate.ArticleAggregate, error)
 	ListArticles(ctx context.Context, page, size uint32) ([]*aggregate.ArticleAggregate, error)
+	ListByIds(ctx context.Context, articleIDs []uint64) ([]*aggregate.ArticleAggregate, error)
 	ListUserArticles(ctx context.Context, authorID uint64, page, size uint32) ([]*aggregate.ArticleAggregate, error)
 	ListMyArticles(ctx context.Context, authorID uint64, isAll bool, page, size uint32) ([]*aggregate.ArticleAggregate, error)
 	ListByCategory(ctx context.Context, categoryID uint64, page, size uint32) ([]*aggregate.ArticleAggregate, error)

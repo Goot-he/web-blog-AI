@@ -5,5 +5,5 @@ type RedisConf struct {
 	Port     string `yaml:"port"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
-	DB       string `yaml:"db"`
+	DB       int    `yaml:"db"`
 }

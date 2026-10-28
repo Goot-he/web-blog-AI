@@ -2,6 +2,7 @@ package dto
 
 import (
 	"core-server/internal/model/aggregate"
+	"core-server/internal/model/enum"
 	"time"
 )
 
@@ -29,6 +30,7 @@ type EditorArticleRequest struct {
 type DeleteArticleRequest struct {
 	ID     uint64
 	UserID uint64
+	Role   enum.Role
 }
 type PublishDraftRequest struct {
 	ID     uint64

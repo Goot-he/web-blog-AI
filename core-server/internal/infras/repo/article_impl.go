@@ -253,6 +253,28 @@ func (a *ArticleRepo) ListByCategory(ctx context.Context, categoryID uint64, pag
 	return a.listPublished(ctx, page, size, article.CategoryIDEQ(categoryID))
 }
 
+// ListByIds 根据传入的文章ID批量返回文章数据（只返回未删除、已发布的文章，带作者和分类）
+func (a *ArticleRepo) ListByIds(ctx context.Context, articleIDs []uint64) ([]*aggregate.ArticleAggregate, error) {
+	if len(articleIDs) == 0 {
+		return nil, nil
+	}
+
+	data, err := a.DB(ctx).Article.Query().
+		Where(
+			article.IDIn(articleIDs...),
+			article.DeletedAtIsNil(),
+			article.PublishedAtNotNil(),
+		).
+		Order(article.ByID(sql.OrderAsc())).
+		WithUser().
+		WithCategory().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return toArticleAggregates(data), nil
+}
+
 // SearchArticles 按关键词搜索已发布文章（标题、概述、正文任一命中即可）
 func (a *ArticleRepo) SearchArticles(ctx context.Context, keyword string, page, size uint32) ([]*aggregate.ArticleAggregate, error) {
 	// 正文是longtext 这里用的是 LIKE %keyword% 数据量大了要换成全文索引

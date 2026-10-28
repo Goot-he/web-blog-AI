@@ -4,6 +4,7 @@ import (
 	"context"
 	"core-server/internal/application"
 	"core-server/internal/model/dto"
+	"core-server/internal/model/enum"
 	"core-server/internal/rpc/articlepb"
 )
 
@@ -62,6 +63,7 @@ func (r *ArticleRpc) DeleteArticle(ctx context.Context, req *articlepb.DeleteArt
 	err := r.articleService.DeleteArticle(ctx, dto.DeleteArticleRequest{
 		ID:     req.Id,
 		UserID: req.UserID,
+		Role:   enum.ParseRoleString(req.GetRole()),
 	})
 	if err != nil {
 		return nil, err

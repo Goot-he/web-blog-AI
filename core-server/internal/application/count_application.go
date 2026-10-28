@@ -77,8 +77,16 @@ func (s *CountService) BatchGetArticleInteractionCounts(ctx context.Context, art
 
 // ------------------------------------------------ 计数修改 -----------------------------------------
 
-func (s *CountService) UpdateObjectTypeWithInteractionType(ctx context.Context, object, interaction string, objectID uint64) error {
-	s.repo.Upsert(ctx)
+func (s *CountService) UpdateObjectTypeWithInteractionType(ctx context.Context, object, interaction string, objectID uint64, delta int64) error {
+	if err := s.repo.Upsert(ctx, &entity.InteractionCount{
+		ObjectID:        objectID,
+		ObjectType:      enum.ParseObjectType(object),
+		InteractionType: enum.ParseInteractionType(interaction),
+	}, delta); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *CountService) UpdateLikeCount(ctx context.Context, userID uint64, num int64) error {

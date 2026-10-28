@@ -25,3 +25,17 @@ func ParseRole(num uint32) Role {
 		return RoleUnknown
 	}
 }
+
+// ParseRoleString 把接口传进来的字符串角色转成数字枚举
+func ParseRoleString(s string) Role {
+	switch s {
+	case "admin":
+		return RoleAdmin
+	case "user":
+		return RoleUser
+	case "visitor":
+		return RoleVisitor
+	default:
+		return RoleUnknown
+	}
+}

@@ -24,9 +24,9 @@ type UserRepo interface {
 
 	// 有关用户写操作
 
-	CreateUser(ctx context.Context, user *entity.User) error
+	CreateUser(ctx context.Context, data *entity.User) error
 
-	UpdateProfile(ctx context.Context, user *entity.User) error
+	UpdateProfile(ctx context.Context, data *entity.User) error
 	UpdateAvatar(ctx context.Context, userID uint64, avatar string) error
 	UpdatePassword(ctx context.Context, userID uint64, password string) error
 	UpdateStatus(ctx context.Context, userID uint64, status enum.UserStatus) error
