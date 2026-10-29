@@ -4,7 +4,6 @@ import (
 	"context"
 	"core-server/internal/infras/repo/ent/interactionlike"
 	"core-server/internal/model/entity"
-	"core-server/internal/model/enum"
 	stdsql "database/sql"
 	"fmt"
 
@@ -67,11 +66,11 @@ func (r *LikeRepo) UpdateWithCondition(ctx context.Context, condition string, li
 }
 
 // QueryWithCondition 返回一个点赞实例 用于判断指定的点赞状态是否存在
-func (r *LikeRepo) QueryWithCondition(ctx context.Context, userID, objectID uint64, objectType enum.ObjectType, status string) (*entity.InteractionLike, error) {
+func (r *LikeRepo) QueryWithCondition(ctx context.Context, userID, objectID uint64, objectType string, status string) (*entity.InteractionLike, error) {
 	node, err := r.DB(ctx).InteractionLike.Query().Where(
 		interactionlike.UserIDEQ(userID),
 		interactionlike.ObjectIDEQ(objectID),
-		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType.String())),
+		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType)),
 		interactionlike.StatusEQ(interactionlike.Status(status)),
 	).Only(ctx)
 	if err != nil {
@@ -81,10 +80,10 @@ func (r *LikeRepo) QueryWithCondition(ctx context.Context, userID, objectID uint
 }
 
 // CountUserLiked 统计指定用户的指定类型的点赞数量
-func (r *LikeRepo) CountUserLiked(ctx context.Context, userID, objectID uint64, objectType enum.ObjectType) (int, error) {
+func (r *LikeRepo) CountUserLiked(ctx context.Context, userID, objectID uint64, objectType string) (int, error) {
 	count, err := r.DB(ctx).InteractionLike.Query().Where(
 		interactionlike.UserIDEQ(userID),
-		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType.String())),
+		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType)),
 		interactionlike.ObjectIDEQ(objectID),
 	).Count(ctx)
 	if err != nil {
@@ -94,10 +93,10 @@ func (r *LikeRepo) CountUserLiked(ctx context.Context, userID, objectID uint64, 
 }
 
 // PageQueryLikeObjects 分页返回批量数据
-func (r *LikeRepo) PageQueryLikeObjects(ctx context.Context, userID uint64, objectType enum.ObjectType, offset, limit int) ([]*entity.InteractionLike, error) {
+func (r *LikeRepo) PageQueryLikeObjects(ctx context.Context, userID uint64, objectType string, offset, limit int) ([]*entity.InteractionLike, error) {
 	nodes, err := r.DB(ctx).InteractionLike.Query().Where(
 		interactionlike.UserIDEQ(userID),
-		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType.String()))).
+		interactionlike.ObjectTypeEQ(interactionlike.ObjectType(objectType))).
 		Order(
 			interactionlike.ByVersion(sql.OrderDesc()),
 			interactionlike.ByUpdatedAt(sql.OrderDesc()),

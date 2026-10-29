@@ -5,6 +5,32 @@ import (
 	"core-server/internal/model/enum"
 )
 
+type LoginRequest struct {
+	Username string
+	Password string
+}
+type EmailLoginRequest struct {
+	Email string
+}
+type LoginResponse struct {
+	Id     uint64
+	Name   string
+	Avatar string
+	Status enum.UserStatus
+	Role   enum.Role
+}
+
+type RegisterRequest struct {
+	Username string
+	Email    string
+	Password string
+}
+type ForgotPasswordRequest struct {
+	Email    string
+	Password string
+	Confirm  string
+}
+
 type UserInfo struct {
 	ID        uint64
 	Username  string

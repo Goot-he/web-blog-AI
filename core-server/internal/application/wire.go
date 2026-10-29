@@ -1,10 +1,13 @@
 package application
 
 import (
+	"core-server/internal/infras/clog"
+
 	"github.com/google/wire"
 )
 
-var SetService = wire.NewSet(
+var ProviderSet = wire.NewSet(
+	clog.NewLog,
 	NewArticleService,
 	NewUserService,
 	NewCategoryService,

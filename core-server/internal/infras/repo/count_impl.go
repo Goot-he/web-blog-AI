@@ -5,7 +5,6 @@ import (
 
 	"core-server/internal/infras/repo/ent/interactioncount"
 	"core-server/internal/model/entity"
-	"core-server/internal/model/enum"
 )
 
 type CountRepo struct {
@@ -30,9 +29,9 @@ ON DUPLICATE KEY UPDATE count = GREATEST(count + ?, 0), updated_at = NOW(3)`
 	return r.driver.Exec(ctx, query, []any{count.ObjectType.String(), count.ObjectID, count.InteractionType.String(), initialCount, delta}, nil)
 }
 
-func (r *CountRepo) GetByObject(ctx context.Context, objectType enum.ObjectType, objectID uint64) ([]*entity.InteractionCount, error) {
+func (r *CountRepo) GetByObject(ctx context.Context, objectType string, objectID uint64) ([]*entity.InteractionCount, error) {
 	nodes, err := r.DB(ctx).InteractionCount.Query().
-		Where(interactioncount.ObjectTypeEQ(interactioncount.ObjectType(objectType.String())), interactioncount.ObjectIDEQ(objectID)).
+		Where(interactioncount.ObjectTypeEQ(interactioncount.ObjectType(objectType)), interactioncount.ObjectIDEQ(objectID)).
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -40,12 +39,12 @@ func (r *CountRepo) GetByObject(ctx context.Context, objectType enum.ObjectType,
 	return toEntityInteractionCounts(nodes), nil
 }
 
-func (r *CountRepo) GetByObjects(ctx context.Context, objectType enum.ObjectType, objectIDs []uint64) ([]*entity.InteractionCount, error) {
+func (r *CountRepo) GetByObjects(ctx context.Context, objectType string, objectIDs []uint64) ([]*entity.InteractionCount, error) {
 	if len(objectIDs) == 0 {
 		return nil, nil
 	}
 	nodes, err := r.DB(ctx).InteractionCount.Query().
-		Where(interactioncount.ObjectTypeEQ(interactioncount.ObjectType(objectType.String())), interactioncount.ObjectIDIn(objectIDs...)).
+		Where(interactioncount.ObjectTypeEQ(interactioncount.ObjectType(objectType)), interactioncount.ObjectIDIn(objectIDs...)).
 		All(ctx)
 	if err != nil {
 		return nil, err

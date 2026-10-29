@@ -4,4 +4,5 @@ type Config struct {
 	MysqlConf
 	RedisConf
 	LogConf
+	ServerConf
 }

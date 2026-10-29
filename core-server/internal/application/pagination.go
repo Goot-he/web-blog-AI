@@ -1,8 +1,21 @@
 package application
 
+import "errors"
+
 const (
 	defaultPageSize uint32 = 10  // 不传分页大小时使用
 	maxPageSize     uint32 = 100 // 单页最多返回的数量
+)
+
+var (
+	ErrAlreadyLiked = errors.New("already liked")
+
+	ErrNotFound             = errors.New("not found")
+	ErrCategoryTypeNotFound = errors.New("category type not found")
+	ErrCategoryNotFound     = errors.New("category not found")
+	ErrArticleNotFound      = errors.New("article not found")
+
+	ErrCommentNotFound = errors.New("comment not found")
 )
 
 // pagination 把从 1 开始的页码换算成数据库的 offset/limit

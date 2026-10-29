@@ -2,9 +2,10 @@ package rpc
 
 import "github.com/google/wire"
 
-var SetRpc = wire.NewSet(
+var ProviderSet = wire.NewSet(
 	NewArticleRpc,
 	NewUserRpc,
 	NewCategoryRpc,
 	NewCommentRpc,
+	NewServer,
 )

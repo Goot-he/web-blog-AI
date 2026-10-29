@@ -29,7 +29,7 @@ func objectThumbUpCountKey(objectID uint64, objectType string) string {
 	return fmt.Sprintf("like:count:%s:%d", objectType, objectID)
 }
 
-type ILikeCache struct {
+type LikeCache struct {
 	*CacheClient        // 继承
 	maxLikeSetSize      int64
 	likeListExpiration  time.Duration
@@ -38,8 +38,8 @@ type ILikeCache struct {
 	cancelThumbUpScript *redis.Script
 }
 
-func NewILikeCache(cache *CacheClient) *ILikeCache {
-	return &ILikeCache{
+func NewLikeCache(cache *CacheClient) *LikeCache {
+	return &LikeCache{
 		CacheClient:         cache,
 		maxLikeSetSize:      defaultMaxLikeSetSize,
 		likeListExpiration:  defaultLikeListExpiration,
@@ -49,18 +49,18 @@ func NewILikeCache(cache *CacheClient) *ILikeCache {
 	}
 }
 
-func (c *ILikeCache) randomLikeCountExpiration() time.Duration {
+func (c *LikeCache) randomLikeCountExpiration() time.Duration {
 	return randomExpiration(c.likeCountExpiration, 0.3)
 }
 
-func (c *ILikeCache) randomLikeListExpiration() time.Duration {
+func (c *LikeCache) randomLikeListExpiration() time.Duration {
 	return randomExpiration(c.likeListExpiration, 0.3)
 }
 
 //======================================================================================================================
 // 点赞操作
 
-func (c *ILikeCache) ThumbUp(ctx context.Context, userID uint64, objectType string, objectID uint64, score int64) error {
+func (c *LikeCache) ThumbUp(ctx context.Context, userID uint64, objectType string, objectID uint64, score int64) error {
 	keyZSet := thumbUpListKey(userID, objectType)
 	keyCount := objectThumbUpCountKey(objectID, objectType)
 	objectIDStr := strconv.FormatUint(objectID, 10)
@@ -101,7 +101,7 @@ func (c *ILikeCache) ThumbUp(ctx context.Context, userID uint64, objectType stri
 	return nil
 }
 
-func (c *ILikeCache) CancelThumbUp(ctx context.Context, userID uint64, objectType string, objectID uint64) (int, int64, error) {
+func (c *LikeCache) CancelThumbUp(ctx context.Context, userID uint64, objectType string, objectID uint64) (int, int64, error) {
 	keyZSet := thumbUpListKey(userID, objectType)
 	keyCount := objectThumbUpCountKey(objectID, objectType)
 	objectIDStr := strconv.FormatUint(objectID, 10)
@@ -135,7 +135,7 @@ func (c *ILikeCache) CancelThumbUp(ctx context.Context, userID uint64, objectTyp
 	return 1, scoreInt, nil
 }
 
-func (c *ILikeCache) ExistZSetMember(ctx context.Context, userID uint64, objectType string, objectID uint64) (bool, error) {
+func (c *LikeCache) ExistZSetMember(ctx context.Context, userID uint64, objectType string, objectID uint64) (bool, error) {
 	keyZSet := thumbUpListKey(userID, objectType)
 	objectIDStr := strconv.FormatUint(objectID, 10)
 
@@ -149,19 +149,19 @@ func (c *ILikeCache) ExistZSetMember(ctx context.Context, userID uint64, objectT
 	return true, nil
 }
 
-func (c *ILikeCache) CompensationCountDecr(ctx context.Context, objectID uint64, objectType string) error {
+func (c *LikeCache) CompensationCountDecr(ctx context.Context, objectID uint64, objectType string) error {
 	keyCount := objectThumbUpCountKey(objectID, objectType)
 	_, err := c.Cache.Decr(ctx, keyCount).Result()
 	return err
 }
 
-func (c *ILikeCache) CompensationCountIncr(ctx context.Context, objectID uint64, objectType string) error {
+func (c *LikeCache) CompensationCountIncr(ctx context.Context, objectID uint64, objectType string) error {
 	keyCount := objectThumbUpCountKey(objectID, objectType)
 	_, err := c.Cache.Incr(ctx, keyCount).Result()
 	return err
 }
 
-func (c *ILikeCache) GetObjectLikeCount(ctx context.Context, objectID uint64, objectType string) (uint64, error) {
+func (c *LikeCache) GetObjectLikeCount(ctx context.Context, objectID uint64, objectType string) (uint64, error) {
 	keyCount := objectThumbUpCountKey(objectID, objectType)
 	count, err := c.Cache.Get(ctx, keyCount).Int64()
 	if errors.Is(err, redis.Nil) {
@@ -176,7 +176,7 @@ func (c *ILikeCache) GetObjectLikeCount(ctx context.Context, objectID uint64, ob
 //======================================================================================================================
 // 点赞列表
 
-func (c *ILikeCache) SetLikeList(ctx context.Context, userID uint64, objectType string, objectIDs []uint64, scores []float64) error {
+func (c *LikeCache) SetLikeList(ctx context.Context, userID uint64, objectType string, objectIDs []uint64, scores []float64) error {
 	if len(objectIDs) == 0 {
 		return nil
 	}
@@ -198,7 +198,7 @@ func (c *ILikeCache) SetLikeList(ctx context.Context, userID uint64, objectType 
 	return err
 }
 
-func (c *ILikeCache) PageQueryObjects(ctx context.Context, userID uint64, objectType string, page, size int) ([]uint64, error) {
+func (c *LikeCache) PageQueryObjects(ctx context.Context, userID uint64, objectType string, page, size int) ([]uint64, error) {
 	key := thumbUpListKey(userID, objectType)
 	start := int64((page - 1) * size)
 	stop := start + int64(size) - 1

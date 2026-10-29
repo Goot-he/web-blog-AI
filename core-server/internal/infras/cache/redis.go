@@ -3,16 +3,18 @@ package cache
 import (
 	"context"
 	"core-server/internal/config"
+	"core-server/internal/infras/clog"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 type CacheClient struct {
 	Cache *redis.Client
 }
 
-func NewCacheClient(cfg config.Config) *CacheClient {
+func NewCacheClient(cfg *config.Config, log *clog.Log) *CacheClient {
 	options := redis.Options{
 		Addr:     cfg.RedisConf.Host + ":" + cfg.RedisConf.Port,
 		Username: cfg.RedisConf.Username,
@@ -36,12 +38,15 @@ func NewCacheClient(cfg config.Config) *CacheClient {
 
 	rdb := redis.NewClient(&options)
 
-	// 测试链接
-	ctx, cancel := context.WithCancel(context.Background())
+	// 测试连接
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		//log.Errorf("redis connect err: %v", err)
+		log.Warn("redis ping failed, cache may be unavailable",
+			zap.Error(err),
+			zap.String("addr", options.Addr),
+		)
 	}
 
 	// 连接成功

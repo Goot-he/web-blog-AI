@@ -18,7 +18,7 @@ type Log struct {
 	zl *zap.Logger
 }
 
-func NewLog(cfg config.Config) (*Log, error) {
+func NewLog(cfg *config.Config) (*Log, error) {
 	level, err := parseLevel(cfg.LogConf.Level)
 	if err != nil {
 		return nil, err
