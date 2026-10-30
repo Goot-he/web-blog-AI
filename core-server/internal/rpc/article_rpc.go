@@ -10,10 +10,10 @@ import (
 
 type ArticleRpc struct {
 	articlepb.UnimplementedArticleServiceServer
-	articleService application.ArticleService
+	articleService *application.ArticleService
 }
 
-func NewArticleRpc(newArticleService application.ArticleService) *ArticleRpc {
+func NewArticleRpc(newArticleService *application.ArticleService) *ArticleRpc {
 	return &ArticleRpc{
 		articleService: newArticleService,
 	}
@@ -55,7 +55,8 @@ func (r *ArticleRpc) EditorArticle(ctx context.Context, req *articlepb.EditorArt
 		return nil, err
 	}
 	return &articlepb.EditorArticleResponse{
-		Success: true,
+		Success:   true,
+		ArticleID: req.Id,
 	}, nil
 }
 
@@ -63,7 +64,7 @@ func (r *ArticleRpc) DeleteArticle(ctx context.Context, req *articlepb.DeleteArt
 	err := r.articleService.DeleteArticle(ctx, dto.DeleteArticleRequest{
 		ID:     req.Id,
 		UserID: req.UserID,
-		Role:   enum.ParseRoleString(req.GetRole()),
+		Role:   enum.ParseUserRole(req.GetRole()),
 	})
 	if err != nil {
 		return nil, err
@@ -144,8 +145,10 @@ func (r *ArticleRpc) ListArticles(ctx context.Context, req *articlepb.ListArticl
 
 func (r *ArticleRpc) ListMyArticles(ctx context.Context, req *articlepb.ListMyArticlesRequest) (*articlepb.ListMyArticlesResponse, error) {
 	resp, err := r.articleService.ListMyArticles(ctx, dto.ListMyArticlesRequest{
-		Page: req.Page,
-		Size: req.PageSize,
+		UserID:      req.GetAuthorID(),
+		Page:        req.Page,
+		Size:        req.PageSize,
+		IsPublished: req.IsPublished,
 	})
 	if err != nil {
 		return nil, err

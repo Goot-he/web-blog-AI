@@ -9,8 +9,6 @@ import (
 	"core-server/internal/infras/clog"
 	"core-server/internal/model/dto"
 	"core-server/internal/model/entity"
-
-	"go.uber.org/zap"
 )
 
 type CategoryService struct {
@@ -36,13 +34,10 @@ func (s *CategoryService) CreateType(ctx context.Context, req dto.CreateTypeRequ
 		Category: name,
 		ParentID: 0,
 	}); err != nil {
-		s.log.Error("create category type failed",
-			zap.Error(err),
-			zap.String("name", name),
-		)
+		s.log.Error("create category type failed")
 		return err
 	}
-	s.log.Info("category type created", zap.String("name", name))
+	s.log.Info("category type created")
 	return nil
 }
 
@@ -53,13 +48,10 @@ func (s *CategoryService) DeleteType(ctx context.Context, req dto.DeleteTypeRequ
 		return errors.New("type id is required")
 	}
 	if err := s.CategoryDomain.DeleteType(ctx, req.ID); err != nil {
-		s.log.Error("delete category type failed",
-			zap.Error(err),
-			zap.Uint64("type_id", req.ID),
-		)
+		s.log.Error("delete category type failed")
 		return err
 	}
-	s.log.Info("category type deleted", zap.Uint64("type_id", req.ID))
+	s.log.Info("category type deleted")
 	return nil
 }
 
@@ -67,10 +59,10 @@ func (s *CategoryService) DeleteType(ctx context.Context, req dto.DeleteTypeRequ
 func (s *CategoryService) ListTypes(ctx context.Context, _ dto.ListTypesRequest) (*dto.ListTypesResponse, error) {
 	items, err := s.CategoryDomain.ListType(ctx)
 	if err != nil {
-		s.log.Warn("list category types failed", zap.Error(err))
+		s.log.Warn("list category types failed")
 		return nil, err
 	}
-	s.log.Debug("list category types", zap.Int("count", len(items)))
+	s.log.Debug("list category types")
 	return &dto.ListTypesResponse{
 		Types: dto.ToCategoryTypes(items),
 	}, nil
@@ -80,28 +72,21 @@ func (s *CategoryService) ListTypes(ctx context.Context, _ dto.ListTypesRequest)
 func (s *CategoryService) CreateCategory(ctx context.Context, req dto.CreateCategoryRequest) error {
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
-		s.log.Debug("empty category name", zap.Uint64("parent_id", req.ParentID))
+		s.log.Debug("empty category name")
 		return errors.New("category name is required")
 	}
 	if req.ParentID == 0 {
-		s.log.Debug("empty parent id", zap.String("name", name))
+		s.log.Debug("empty parent id")
 		return errors.New("parentID is required")
 	}
 	if err := s.CategoryDomain.CreateCate(ctx, &entity.Category{
 		Category: name,
 		ParentID: req.ParentID,
 	}); err != nil {
-		s.log.Error("create category failed",
-			zap.Error(err),
-			zap.Uint64("parent_id", req.ParentID),
-			zap.String("name", name),
-		)
+		s.log.Error("create category failed")
 		return err
 	}
-	s.log.Info("category created",
-		zap.Uint64("parent_id", req.ParentID),
-		zap.String("name", name),
-	)
+	s.log.Info("category created")
 	return nil
 }
 
@@ -112,13 +97,10 @@ func (s *CategoryService) DeleteCategory(ctx context.Context, req dto.DeleteCate
 		return errors.New("category id is required")
 	}
 	if err := s.CategoryDomain.DeleteCate(ctx, req.ID); err != nil {
-		s.log.Error("delete category failed",
-			zap.Error(err),
-			zap.Uint64("category_id", req.ID),
-		)
+		s.log.Error("delete category failed")
 		return err
 	}
-	s.log.Info("category deleted", zap.Uint64("category_id", req.ID))
+	s.log.Info("category deleted")
 	return nil
 }
 
@@ -129,16 +111,10 @@ func (s *CategoryService) ListCategories(ctx context.Context, req dto.ListCatego
 	}
 	items, err := s.CategoryDomain.ListCate(ctx, req.ParentID)
 	if err != nil {
-		s.log.Warn("list categories failed",
-			zap.Error(err),
-			zap.Uint64("parent_id", req.ParentID),
-		)
+		s.log.Warn("list categories failed")
 		return nil, err
 	}
-	s.log.Debug("list categories",
-		zap.Uint64("parent_id", req.ParentID),
-		zap.Int("count", len(items)),
-	)
+	s.log.Debug("list categories")
 	return &dto.ListCategoriesResponse{
 		Categories: dto.ToCategories(items),
 	}, nil

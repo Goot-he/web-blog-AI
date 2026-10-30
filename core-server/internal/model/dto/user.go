@@ -17,7 +17,7 @@ type LoginResponse struct {
 	Name   string
 	Avatar string
 	Status enum.UserStatus
-	Role   enum.Role
+	Role   enum.UserRole
 }
 
 type RegisterRequest struct {
@@ -108,6 +108,17 @@ type UpdateUserStatusRequest struct {
 	Status string
 }
 
+// ToLoginResponse 转登录信息
+func ToLoginResponse(user *entity.User) *LoginResponse {
+	return &LoginResponse{
+		Id:     user.ID,
+		Name:   user.Username,
+		Avatar: user.Avatar,
+		Status: user.Status,
+		Role:   user.Role,
+	}
+}
+
 // ToUserInfo entity.User 转用户信息
 func ToUserInfo(u *entity.User) *UserInfo {
 	if u == nil {
@@ -178,15 +189,13 @@ func birthdayString(u *entity.User) string {
 	return u.BirthDate.Time.Format("2006-01-02")
 }
 
-// roleName 数字角色枚举转数据库/接口使用的字符串
-func roleName(r enum.Role) string {
+// roleName 角色枚举转接口使用的字符串
+func roleName(r enum.UserRole) string {
 	switch r {
-	case enum.RoleAdmin:
+	case enum.UserRoleAdmin:
 		return "admin"
-	case enum.RoleUser:
+	case enum.UserRoleUser:
 		return "user"
-	case enum.RoleVisitor:
-		return "visitor"
 	default:
 		return "unknown"
 	}

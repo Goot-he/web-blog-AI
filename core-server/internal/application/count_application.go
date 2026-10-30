@@ -7,8 +7,6 @@ import (
 	"core-server/internal/infras/clog"
 	"core-server/internal/model/entity"
 	"core-server/internal/model/enum"
-
-	"go.uber.org/zap"
 )
 
 type CountService struct {
@@ -29,10 +27,7 @@ func NewCountService(countRepo domain.CountRepoDomain, userDomain domain.UserDom
 func (s *CountService) GetArticleInteractionCount(ctx context.Context, articleID uint64) (*entity.InteractionStatus, error) {
 	res, err := s.repo.GetByObject(ctx, enum.ObjectTypeArticle.String(), articleID)
 	if err != nil {
-		s.log.Warn("get article interaction count failed",
-			zap.Error(err),
-			zap.Uint64("article_id", articleID),
-		)
+		s.log.Warn("get article interaction count failed")
 		return nil, err
 	}
 
@@ -64,10 +59,7 @@ func (s *CountService) BatchGetArticleInteractionCounts(ctx context.Context, art
 
 	res, err := s.repo.GetByObjects(ctx, enum.ObjectTypeArticle.String(), articleIDs)
 	if err != nil {
-		s.log.Warn("batch get article interaction counts failed",
-			zap.Error(err),
-			zap.Int("article_count", len(articleIDs)),
-		)
+		s.log.Warn("batch get article interaction counts failed")
 		return nil, err
 	}
 	for _, count := range res {
@@ -100,104 +92,69 @@ func (s *CountService) UpdateObjectTypeWithInteractionType(ctx context.Context, 
 		ObjectType:      enum.ParseObjectType(object),
 		InteractionType: enum.ParseInteractionType(interaction),
 	}, delta); err != nil {
-		s.log.Error("update interaction count failed",
-			zap.Error(err),
-			zap.String("object_type", object),
-			zap.String("interaction_type", interaction),
-			zap.Uint64("object_id", objectID),
-			zap.Int64("delta", delta),
-		)
+		s.log.Error("update interaction count failed")
 		return err
 	}
-	s.log.Debug("interaction count updated",
-		zap.String("object_type", object),
-		zap.String("interaction_type", interaction),
-		zap.Uint64("object_id", objectID),
-		zap.Int64("delta", delta),
-	)
+	s.log.Debug("interaction count updated")
 	return nil
 }
 
 // UpdateLikeCount 更新用户点赞数
 func (s *CountService) UpdateLikeCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateLikeCount(ctx, userID, num); err != nil {
-		s.log.Error("update user like count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user like count failed")
 		return err
 	}
-	s.log.Debug("user like count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user like count updated")
 	return nil
 }
 
 // UpdateReceiveLikeCount 更新用户收到的点赞数
 func (s *CountService) UpdateReceiveLikeCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateReceiveLikeCount(ctx, userID, num); err != nil {
-		s.log.Error("update user receive like count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user receive like count failed")
 		return err
 	}
-	s.log.Debug("user receive like count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user receive like count updated")
 	return nil
 }
 
 // UpdateCommentCount 更新用户评论数
 func (s *CountService) UpdateCommentCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateCommentCount(ctx, userID, num); err != nil {
-		s.log.Error("update user comment count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user comment count failed")
 		return err
 	}
-	s.log.Debug("user comment count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user comment count updated")
 	return nil
 }
 
 // UpdateReviewCount 更新用户文章浏览量
 func (s *CountService) UpdateReviewCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateViewCount(ctx, userID, num); err != nil {
-		s.log.Error("update user view count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user view count failed")
 		return err
 	}
-	s.log.Debug("user view count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user view count updated")
 	return nil
 }
 
 // UpdateFavorCount 更新用户收藏数
 func (s *CountService) UpdateFavorCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateFavorCount(ctx, userID, num); err != nil {
-		s.log.Error("update user favor count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user favor count failed")
 		return err
 	}
-	s.log.Debug("user favor count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user favor count updated")
 	return nil
 }
 
 // UpdateReceiveFavorCount 更新用户收到的收藏数
 func (s *CountService) UpdateReceiveFavorCount(ctx context.Context, userID uint64, num int64) error {
 	if err := s.userDomain.UpdateReceiveFavorCount(ctx, userID, num); err != nil {
-		s.log.Error("update user receive favor count failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Int64("delta", num),
-		)
+		s.log.Error("update user receive favor count failed")
 		return err
 	}
-	s.log.Debug("user receive favor count updated", zap.Uint64("user_id", userID), zap.Int64("delta", num))
+	s.log.Debug("user receive favor count updated")
 	return nil
 }

@@ -30,7 +30,7 @@ type EditorArticleRequest struct {
 type DeleteArticleRequest struct {
 	ID     uint64
 	UserID uint64
-	Role   enum.Role
+	Role   enum.UserRole
 }
 type PublishDraftRequest struct {
 	ID     uint64
@@ -48,10 +48,10 @@ type ListArticlesRequest struct { // 展示全部文章
 	Size uint32
 }
 type ListMyArticlesRequest struct {
-	UserID uint64
-	Page   uint32
-	Size   uint32
-	IsAll  bool // 为true表示查看自己全部文章 为false表示只看草稿
+	UserID      uint64
+	Page        uint32
+	Size        uint32
+	IsPublished *bool // nil=全部，true=只看已发布，false=只看草稿
 }
 type ListUserArticlesRequest struct {
 	UserID uint64

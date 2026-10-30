@@ -18,7 +18,7 @@ type User struct {
 	Phone     string          `db:"phone"`
 	Avatar    string          `db:"avatar"`
 	Sex       enum.Sex        `db:"sex"`
-	Role      enum.Role       `db:"role"`
+	Role      enum.UserRole   `db:"role"`
 	Signature string          `db:"signature"`
 	Status    enum.UserStatus `db:"status"`
 }

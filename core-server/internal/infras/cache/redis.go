@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"go.uber.org/zap"
 )
 
 type CacheClient struct {
@@ -16,10 +15,10 @@ type CacheClient struct {
 
 func NewCacheClient(cfg *config.Config, log *clog.Log) *CacheClient {
 	options := redis.Options{
-		Addr:     cfg.RedisConf.Host + ":" + cfg.RedisConf.Port,
-		Username: cfg.RedisConf.Username,
-		Password: cfg.RedisConf.Password,
-		DB:       cfg.RedisConf.DB,
+		Addr:     cfg.Redis.Host + ":" + cfg.Redis.Port,
+		Username: cfg.Redis.Username,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
 
 		// 设置连接池以及闲置连接数
 		// 设置最小剩余空闲连接数 保证当前剩余不小于它
@@ -43,10 +42,7 @@ func NewCacheClient(cfg *config.Config, log *clog.Log) *CacheClient {
 	defer cancel()
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Warn("redis ping failed, cache may be unavailable",
-			zap.Error(err),
-			zap.String("addr", options.Addr),
-		)
+		log.Warn("redis ping failed, cache may be unavailable")
 	}
 
 	// 连接成功

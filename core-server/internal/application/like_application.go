@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/avast/retry-go"
-	"go.uber.org/zap"
 )
 
 type LikeService struct {
@@ -55,20 +54,11 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 	// 先判断是否已经存在点赞状态
 	isThumbUp, err := s.HasThumbUp(ctx, userID, objectID, objectType)
 	if err != nil {
-		s.log.Error("check thumb up status failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Error("check thumb up status failed")
 		return err
 	}
 	if isThumbUp { // 这里表示已经处于点赞状态了
-		s.log.Debug("already thumbed up",
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Debug("already thumbed up")
 		return nil
 	}
 
@@ -85,20 +75,11 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 	if err := s.repo.WithTransaction(ctx, func(ctx context.Context) error {
 		affected, err := s.repo.Upsert(ctx, like)
 		if err != nil {
-			s.log.Error("upsert like record failed",
-				zap.Error(err),
-				zap.Uint64("user_id", userID),
-				zap.Uint64("object_id", objectID),
-				zap.String("object_type", objectType),
-			)
+			s.log.Error("upsert like record failed")
 			return err
 		}
 		if affected == 0 { // 这里表示数据库未执行任何操作
-			s.log.Debug("like state unchanged",
-				zap.Uint64("user_id", userID),
-				zap.Uint64("object_id", objectID),
-				zap.String("object_type", objectType),
-			)
+			s.log.Debug("like state unchanged")
 			mark = false
 			return nil
 		}
@@ -109,21 +90,13 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 
 		// 更新用户的点赞数
 		if err := s.userRepo.UpdateLikeCount(ctx, userID, 1); err != nil {
-			s.log.Error("update user like count failed",
-				zap.Error(err),
-				zap.Uint64("user_id", userID),
-			)
+			s.log.Error("update user like count failed")
 			return err
 		}
 
 		return nil
 	}); err != nil {
-		s.log.Error("thumb up transaction failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Error("thumb up transaction failed")
 		return err
 	}
 
@@ -131,11 +104,7 @@ func (s *LikeService) ThumbUp(ctx context.Context, userID, objectID uint64, obje
 	if mark {
 		s.asyncUpdateAuthorReceiveLikeCount(objectType, objectID, 1)
 	}
-	s.log.Info("thumb up succeeded",
-		zap.Uint64("user_id", userID),
-		zap.Uint64("object_id", objectID),
-		zap.String("object_type", objectType),
-	)
+	s.log.Info("thumb up succeeded")
 	return nil
 }
 
@@ -143,20 +112,11 @@ func (s *LikeService) CancelThumbUp(ctx context.Context, userID, objectID uint64
 	// 先判断是否处于点赞状态
 	isThumbUp, err := s.HasThumbUp(ctx, userID, objectID, objectType)
 	if err != nil {
-		s.log.Error("check thumb up status failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Error("check thumb up status failed")
 		return err
 	}
 	if !isThumbUp {
-		s.log.Debug("not thumbed up, nothing to cancel",
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Debug("not thumbed up, nothing to cancel")
 		return nil
 	}
 
@@ -173,20 +133,11 @@ func (s *LikeService) CancelThumbUp(ctx context.Context, userID, objectID uint64
 	if err := s.repo.WithTransaction(ctx, func(ctx context.Context) error {
 		affected, err := s.repo.Upsert(ctx, like)
 		if err != nil {
-			s.log.Error("upsert cancel like record failed",
-				zap.Error(err),
-				zap.Uint64("user_id", userID),
-				zap.Uint64("object_id", objectID),
-				zap.String("object_type", objectType),
-			)
+			s.log.Error("upsert cancel like record failed")
 			return err
 		}
 		if affected == 0 {
-			s.log.Debug("like state unchanged",
-				zap.Uint64("user_id", userID),
-				zap.Uint64("object_id", objectID),
-				zap.String("object_type", objectType),
-			)
+			s.log.Debug("like state unchanged")
 			mark = false
 			return nil
 		}
@@ -197,21 +148,13 @@ func (s *LikeService) CancelThumbUp(ctx context.Context, userID, objectID uint64
 
 		// 更新用户的点赞数量
 		if err := s.userRepo.UpdateLikeCount(ctx, userID, -1); err != nil {
-			s.log.Error("update user like count failed",
-				zap.Error(err),
-				zap.Uint64("user_id", userID),
-			)
+			s.log.Error("update user like count failed")
 			return err
 		}
 
 		return nil
 	}); err != nil {
-		s.log.Error("cancel thumb up transaction failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.Uint64("object_id", objectID),
-			zap.String("object_type", objectType),
-		)
+		s.log.Error("cancel thumb up transaction failed")
 		return err
 	}
 
@@ -219,11 +162,7 @@ func (s *LikeService) CancelThumbUp(ctx context.Context, userID, objectID uint64
 	if mark {
 		s.asyncUpdateAuthorReceiveLikeCount(objectType, objectID, -1)
 	}
-	s.log.Info("cancel thumb up succeeded",
-		zap.Uint64("user_id", userID),
-		zap.Uint64("object_id", objectID),
-		zap.String("object_type", objectType),
-	)
+	s.log.Info("cancel thumb up succeeded")
 	return nil
 }
 
@@ -244,12 +183,7 @@ func (s *LikeService) asyncUpdateAuthorReceiveLikeCount(objectType string, objec
 			retry.DelayType(retry.BackOffDelay),
 		)
 		if err != nil {
-			s.log.Error("async update author receive like count failed",
-				zap.Error(err),
-				zap.String("object_type", objectType),
-				zap.Uint64("object_id", objectID),
-				zap.Int("delta", delta),
-			)
+			s.log.Error("async update author receive like count failed")
 			return
 		}
 	}()
@@ -265,10 +199,7 @@ func (s *LikeService) getAuthorIdByObject(ctx context.Context, objectType string
 		return article.Article.AuthorID, nil
 
 	default:
-		s.log.Warn("unsupported object type for author lookup",
-			zap.String("object_type", objectType),
-			zap.Uint64("object_id", objectID),
-		)
+		s.log.Warn("unsupported object type for author lookup")
 		return 0, nil
 	}
 }
@@ -280,13 +211,7 @@ func (s *LikeService) UserLikeList(ctx context.Context, userID uint64, objectTyp
 	limit := (page - 1) * size
 	likes, err := s.repo.PageQueryLikeObjects(ctx, userID, objectType, limit, size)
 	if err != nil {
-		s.log.Warn("page query like objects failed",
-			zap.Error(err),
-			zap.Uint64("user_id", userID),
-			zap.String("object_type", objectType),
-			zap.Int("page", page),
-			zap.Int("size", size),
-		)
+		s.log.Warn("page query like objects failed")
 		return nil, err
 	}
 	ids := make([]uint64, 0, len(likes))
@@ -295,17 +220,10 @@ func (s *LikeService) UserLikeList(ctx context.Context, userID uint64, objectTyp
 	}
 	articles, err := s.articleRepo.ListByIds(ctx, ids)
 	if err != nil {
-		s.log.Warn("list articles by ids failed",
-			zap.Error(err),
-			zap.Int("id_count", len(ids)),
-		)
+		s.log.Warn("list articles by ids failed")
 		return nil, err
 	}
 
-	s.log.Debug("user like list",
-		zap.Uint64("user_id", userID),
-		zap.String("object_type", objectType),
-		zap.Int("count", len(articles)),
-	)
+	s.log.Debug("user like list")
 	return articles, nil
 }

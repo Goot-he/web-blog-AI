@@ -31,7 +31,7 @@ func NewServer(
 	dbClient *repo.EntClient,
 	cacheClient *cache.CacheClient,
 	auth *AuthRPC,
-	like *LikeRPC,
+	like *LikeRpc,
 	category *CategoryRpc,
 	article *ArticleRpc,
 	comment *CommentRpc,
@@ -56,11 +56,11 @@ func NewServer(
 
 func (s *Server) Start() error {
 
-	lis, err := net.Listen("tcp", s.cfg.ServerConf.Address)
+	lis, err := net.Listen("tcp", s.cfg.Server.Address)
 	if err != nil {
-		return fmt.Errorf("listen %s: %w", s.cfg.ServerConf.Address, err)
+		return fmt.Errorf("listen %s: %w", s.cfg.Server.Address, err)
 	}
-	log.Printf("core-server listening on %s", s.cfg.ServerConf.Address)
+	log.Printf("core-server listening on %s", s.cfg.Server.Address)
 	return s.Engine.Serve(lis)
 }
 
@@ -80,5 +80,5 @@ func (s *Server) Stop() {
 }
 
 func (s *Server) Addr() string {
-	return s.cfg.ServerConf.Address
+	return s.cfg.Server.Address
 }

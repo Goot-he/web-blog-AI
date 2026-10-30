@@ -13,8 +13,8 @@ type LikeRpc struct {
 	service *application.LikeService
 }
 
-func NewLikeRpc(likeService *application.LikeService) LikeRpc {
-	return LikeRpc{
+func NewLikeRpc(likeService *application.LikeService) *LikeRpc {
+	return &LikeRpc{
 		service: likeService,
 	}
 }

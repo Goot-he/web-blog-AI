@@ -48,15 +48,27 @@ func (a *ArticleRepo) Create(ctx context.Context, data *entity.Article) error {
 			SetCoverage(data.CoverImage).
 			SetAuthorID(data.AuthorID).
 			SetCategoryID(data.CategoryID).
-			SetIsTop(data.IsTop).
-			SetIsPublished(data.IsPublished)
-		if data.PublishedAt.Valid {
-			create.SetPublishedAt(data.PublishedAt.Time)
+			SetIsTop(data.IsTop)
+
+		// is_published=true 时发布时间必须有值：调用方没传就用当前时间；草稿保持 NULL
+		if data.IsPublished {
+			publishedAt := time.Now()
+			if data.PublishedAt.Valid {
+				publishedAt = data.PublishedAt.Time
+			}
+			create.SetIsPublished(true).SetPublishedAt(publishedAt)
+		} else {
+			create.SetIsPublished(false)
 		}
 
-		// 同时用户状态文章计数加一
+		created, err := create.Save(ctx)
+		if err != nil {
+			return err
+		}
+
+		// 已发布的文章才计入作者的 article_count
 		if data.IsPublished {
-			err := a.DB(ctx).UserStatu.Update().Where(
+			err = a.DB(ctx).UserStatu.Update().Where(
 				userstatu.UserIDEQ(data.AuthorID), userstatu.DeletedAtIsNil()).
 				AddArticleCount(1).
 				Exec(ctx)
@@ -65,10 +77,12 @@ func (a *ArticleRepo) Create(ctx context.Context, data *entity.Article) error {
 			}
 		}
 
-		_, err := create.Save(ctx)
-		if err != nil {
-			return err
-		}
+		// 回填数据库生成的字段
+		data.ID = created.ID
+		data.CreatedAt = created.CreatedAt
+		data.UpdatedAt = created.UpdatedAt
+		data.IsPublished = created.IsPublished
+		data.PublishedAt = nullTime(created.PublishedAt)
 
 		return nil
 	}); err != nil {
@@ -105,21 +119,41 @@ func (a *ArticleRepo) Editor(ctx context.Context, data *entity.Article) error {
 			SetContent(data.Content).
 			SetCoverage(data.CoverImage).
 			SetCategoryID(data.CategoryID).
-			SetIsTop(data.IsTop).
-			SetIsPublished(data.IsPublished)
+			SetIsTop(data.IsTop)
 
-		if data.PublishedAt.Valid {
-			update.SetPublishedAt(data.PublishedAt.Time)
+		// 维护 is_published 与 published_at 的一致性
+		switch {
+		case !data.IsPublished:
+			// 改成草稿：发布时间一起清掉
+			update.SetIsPublished(false).ClearPublishedAt()
+		case data.PublishedAt.Valid:
+			update.SetIsPublished(true).SetPublishedAt(data.PublishedAt.Time)
+		case exists.PublishedAt == nil:
+			// 草稿第一次发布：补上当前时间
+			update.SetIsPublished(true).SetPublishedAt(time.Now())
+		default:
+			// 已发布且没传时间：保持原来的发布时间
+			update.SetIsPublished(true)
 		}
 
 		if _, err = update.Save(ctx); err != nil {
 			return err
 		}
 
-		if exists.IsPublished == false && data.IsPublished == true {
+		// 同步作者文章计数：草稿→发布 +1，发布→草稿 -1
+		switch {
+		case !exists.IsPublished && data.IsPublished:
 			err := a.DB(ctx).UserStatu.Update().
 				Where(userstatu.UserIDEQ(data.AuthorID), userstatu.DeletedAtIsNil()).
 				AddArticleCount(1).
+				Exec(ctx)
+			if err != nil {
+				return err
+			}
+		case exists.IsPublished && !data.IsPublished:
+			err := a.DB(ctx).UserStatu.Update().
+				Where(userstatu.UserIDEQ(data.AuthorID), userstatu.DeletedAtIsNil()).
+				AddArticleCount(-1).
 				Exec(ctx)
 			if err != nil {
 				return err
@@ -134,14 +168,14 @@ func (a *ArticleRepo) Editor(ctx context.Context, data *entity.Article) error {
 }
 
 // Delete 软删除自己名下的文章
-func (a *ArticleRepo) Delete(ctx context.Context, articleID, authorID uint64, roleID enum.Role) error {
+func (a *ArticleRepo) Delete(ctx context.Context, articleID, authorID uint64, roleID enum.UserRole) error {
 	if err := a.WithTransaction(ctx, func(ctx context.Context) error {
 		// 软删除 条件里带上作者 保证只能删自己的文章
 		update := a.DB(ctx).Article.Update().
 			Where(article.IDEQ(articleID), article.DeletedAtIsNil()).
 			SetDeletedAt(time.Now())
 
-		if roleID != enum.RoleAdmin {
+		if roleID != enum.UserRoleAdmin {
 			// 如果不是管理员 加上是否是作者本人校验
 			update.Where(article.AuthorIDEQ(authorID))
 		}
@@ -236,14 +270,18 @@ func (a *ArticleRepo) ListUserArticles(ctx context.Context, authorID uint64, pag
 	return a.listPublished(ctx, page, size, article.AuthorIDEQ(authorID))
 }
 
-// ListMyArticles 分页查询我的文章（isAll为true返回全部，为false只返回草稿箱）
-func (a *ArticleRepo) ListMyArticles(ctx context.Context, authorID uint64, isAll bool, page, size uint32) ([]*aggregate.ArticleAggregate, error) {
+// ListMyArticles 分页查询我的文章（isPublished 为 nil 查全部，true 只查已发布，false 只查草稿箱）
+func (a *ArticleRepo) ListMyArticles(ctx context.Context, authorID uint64, isPublished *bool, page, size uint32) ([]*aggregate.ArticleAggregate, error) {
 	preds := []predicate.Article{
 		article.AuthorIDEQ(authorID),
 		article.DeletedAtIsNil(),
 	}
-	if !isAll {
-		preds = append(preds, article.PublishedAtIsNil())
+	if isPublished != nil {
+		if *isPublished {
+			preds = append(preds, article.PublishedAtNotNil())
+		} else {
+			preds = append(preds, article.PublishedAtIsNil())
+		}
 	}
 	return a.list(ctx, page, size, preds, article.ByCreatedAt(sql.OrderDesc()))
 }

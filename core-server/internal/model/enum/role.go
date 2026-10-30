@@ -1,41 +1,22 @@
 package enum
 
-type Role uint32
-
 const (
-	RoleUnknown Role = iota
-	RoleAdmin
-	RoleUser
-	RoleVisitor // 游客
+	UserRoleAdmin   UserRole = "admin"
+	UserRoleUser    UserRole = "user"
+	UserRoleUnknown UserRole = "unknown"
 )
 
-func (r Role) Int() uint32 {
-	return uint32(r)
-}
+type UserRole string
 
-func ParseRole(num uint32) Role {
-	switch num {
-	case 1:
-		return RoleAdmin
-	case 2:
-		return RoleUser
-	case 3:
-		return RoleVisitor
-	default:
-		return RoleUnknown
-	}
-}
+func (r UserRole) String() string { return string(r) }
 
-// ParseRoleString 把接口传进来的字符串角色转成数字枚举
-func ParseRoleString(s string) Role {
-	switch s {
+func ParseUserRole(v string) UserRole {
+	switch v {
 	case "admin":
-		return RoleAdmin
+		return UserRoleAdmin
 	case "user":
-		return RoleUser
-	case "visitor":
-		return RoleVisitor
+		return UserRoleUser
 	default:
-		return RoleUnknown
+		return UserRoleUnknown
 	}
 }

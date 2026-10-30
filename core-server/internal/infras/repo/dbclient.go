@@ -20,15 +20,15 @@ type EntClient struct {
 
 // NewEntClient 创建 ent 客户端（连接 MySQL 并设置连接池参数）
 func NewEntClient(cfg *config.Config) (*EntClient, error) {
-	dsn := cfg.DSN()
+	dsn := cfg.Mysql.DSN()
 	drv, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
 
 	db := drv.DB()
-	db.SetMaxIdleConns(cfg.MaxIdleConn)
-	db.SetMaxOpenConns(cfg.MaxOpenConn)
+	db.SetMaxIdleConns(cfg.Mysql.MaxIdleConn)
+	db.SetMaxOpenConns(cfg.Mysql.MaxOpenConn)
 
 	return &EntClient{
 		db:     ent.NewClient(ent.Driver(drv)),

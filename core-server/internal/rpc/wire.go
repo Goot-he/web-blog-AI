@@ -7,5 +7,8 @@ var ProviderSet = wire.NewSet(
 	NewUserRpc,
 	NewCategoryRpc,
 	NewCommentRpc,
+	NewAuthRPC,
+	NewLikeRpc,
+
 	NewServer,
 )

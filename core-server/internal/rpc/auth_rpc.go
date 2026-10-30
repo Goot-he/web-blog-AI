@@ -17,7 +17,7 @@ func NewAuthRPC(userService *application.UserService) *AuthRPC {
 }
 
 func (a *AuthRPC) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb.LoginResponse, error) {
-	res, err := a.userService.(ctx, &dto.LoginRequest{Username: request.GetUsername(), Password: request.GetPassword()})
+	res, err := a.userService.Login(ctx, &dto.LoginRequest{Username: request.GetUsername(), Password: request.GetPassword()})
 	if err != nil {
 		return nil, err
 	}

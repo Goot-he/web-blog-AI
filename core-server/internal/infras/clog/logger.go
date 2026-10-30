@@ -19,12 +19,12 @@ type Log struct {
 }
 
 func NewLog(cfg *config.Config) (*Log, error) {
-	level, err := parseLevel(cfg.LogConf.Level)
+	level, err := parseLevel(cfg.Log.Level)
 	if err != nil {
 		return nil, err
 	}
 
-	mode := strings.ToLower(strings.TrimSpace(cfg.LogConf.Mode))
+	mode := strings.ToLower(strings.TrimSpace(cfg.Log.Mode))
 	if mode == "" {
 		mode = ModeConsole
 	}
@@ -34,13 +34,13 @@ func NewLog(cfg *config.Config) (*Log, error) {
 	case ModeConsole:
 		core = newConsoleCore(level)
 	case ModeFile:
-		fileCore, err := newFileCore(level, cfg.LogConf.FileName)
+		fileCore, err := newFileCore(level, cfg.Log.FileName)
 		if err != nil {
 			return nil, err
 		}
 		core = fileCore
 	default:
-		return nil, fmt.Errorf("unsupported log mde %q, want console|file", cfg.LogConf.Mode)
+		return nil, fmt.Errorf("unsupported log mde %q, want console|file", cfg.Log.Mode)
 	}
 
 	zl := zap.New(

@@ -128,14 +128,14 @@ func toEntityUsers(users []*ent.User) []*entity.User {
 }
 
 // toEntityRole 把数据库的字符串角色枚举映射成领域模型的数字枚举
-func toEntityRole(r user.Role) enum.Role {
+func toEntityRole(r user.Role) enum.UserRole {
 	switch r {
 	case user.RoleAdmin:
-		return enum.RoleAdmin
+		return enum.UserRoleAdmin
 	case user.RoleUser:
-		return enum.RoleUser
+		return enum.UserRoleUser
 	default:
-		return enum.RoleUnknown
+		return enum.UserRoleUnknown
 	}
 }
 
@@ -276,8 +276,8 @@ func toEntStatus(s enum.UserStatus) user.Status {
 }
 
 // toEntRole 数字角色枚举转成 ent 的字符串枚举（数据库只支持 admin/user）
-func toEntRole(r enum.Role) user.Role {
-	if r == enum.RoleAdmin {
+func toEntRole(r enum.UserRole) user.Role {
+	if r == enum.UserRoleAdmin {
 		return user.RoleAdmin
 	}
 	return user.RoleUser

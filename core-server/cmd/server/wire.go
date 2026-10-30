@@ -12,7 +12,7 @@ import (
 	"github.com/google/wire"
 )
 
-func InitApp(cfg *config.Config) (*rpc.Server, error) {
+func InitServer(cfg *config.Config) (*rpc.Server, error) {
 	wire.Build(
 		infras.JobProviderSet,
 		application.ProviderSet,
