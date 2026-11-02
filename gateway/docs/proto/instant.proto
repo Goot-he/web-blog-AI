@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package instant;
+option go_package = "gateway/internal/client/rpc/core-rpc/instantpb;instantpb";
+
+
