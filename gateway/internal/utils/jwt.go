@@ -13,7 +13,7 @@ const (
 )
 
 type JwtClaims struct {
-	UserID    string `json:"user_id"`
+	UserID    uint64 `json:"user_id"`
 	Role      string `json:"role"`
 	TokenType string `json:"token_type"` // token版本
 	jwt.RegisteredClaims
@@ -45,7 +45,7 @@ func CreateToken(signingKey []byte, claims JwtClaims, tokenType string, expiresI
 func GetClaims(tokenString string, signingKey []byte) (*JwtClaims, error) {
 	token, err := ParseToken(tokenString, signingKey)
 	if err != nil {
-		return nli, err
+		return nil, err
 	}
 	claims, ok := token.Claims.(*JwtClaims)
 	if !ok {

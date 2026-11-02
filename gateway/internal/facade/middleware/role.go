@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Role() gin.HandlerFunc {
+func RequireRole() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role := GetRole(c)
 		if role != "admin" {
