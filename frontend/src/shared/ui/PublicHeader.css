@@ -1,0 +1,408 @@
+.public-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: auto auto minmax(320px, 635px) auto;
+  align-items: center;
+  gap: 22px;
+  min-height: 70px;
+  padding: 0 max(24px, calc((100% - 1420px) / 2));
+  border-bottom: 1px solid #e6edf3;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 4px 18px rgba(31, 55, 77, .04);
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  backdrop-filter: blur(14px);
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.public-header.transparent {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  border-bottom-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.public-header.transparent .public-brand,
+.public-header.transparent .public-nav a,
+.public-header.transparent .public-action,
+.public-header.transparent .public-login {
+  color: #fff;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, .28);
+}
+
+.public-header.transparent .public-search {
+  border-color: rgba(255, 255, 255, .45);
+  background: rgba(255, 255, 255, .72);
+  box-shadow: 0 4px 18px rgba(20, 35, 50, .08);
+}
+
+.public-header.transparent .nav-avatar {
+  border-color: rgba(255, 255, 255, .72) !important;
+  background: rgba(255, 255, 255, .2);
+  color: #fff !important;
+}
+
+.public-header.transparent .public-creator {
+  background: rgba(255, 102, 153, .92);
+  text-shadow: none;
+}
+
+.public-header.transparent .public-nav a.active::after {
+  background: #fff;
+}
+
+.public-header.transparent.is-scrolled {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  border-bottom-color: #e6edf3;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 5px 18px rgba(34, 55, 74, .12);
+  backdrop-filter: blur(14px);
+}
+
+.public-header.transparent.is-scrolled .public-brand,
+.public-header.transparent.is-scrolled .public-nav a,
+.public-header.transparent.is-scrolled .public-action,
+.public-header.transparent.is-scrolled .public-login {
+  color: #4b5663;
+  text-shadow: none;
+}
+
+.public-header.transparent.is-scrolled .public-search {
+  border-color: #dfe7ee;
+  background: #f7f9fb;
+  box-shadow: none;
+}
+
+.public-header.transparent.is-scrolled .public-nav a:hover,
+.public-header.transparent.is-scrolled .public-nav a.active {
+  color: #258fce;
+}
+
+.public-header.transparent.is-scrolled .nav-avatar {
+  border-color: #c6dced !important;
+  background: #e8f3fb;
+  color: #3378ac !important;
+}
+
+.public-brand {
+  display: flex;
+  align-items: center;
+  width: 118px;
+  height: 44px;
+  color: #1d2a38;
+  text-decoration: none;
+}
+
+.public-brand img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.public-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.public-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 70px;
+  color: #4b5663;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.public-nav a::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 999px;
+  background: #42a5e4;
+  content: '';
+  transform: scaleX(0);
+  transition: transform .18s ease;
+}
+
+.public-nav a:hover,
+.public-nav a.active {
+  color: #258fce;
+}
+
+.public-nav a.active::after {
+  transform: scaleX(1);
+}
+
+.public-nav-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.nav-account-chevron {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  color: #9aa8b5;
+}
+
+.public-header .nav-account-actions > a {
+  min-height: 43px;
+  font-size: 13px;
+}
+
+.public-header .nav-account-popover > button {
+  min-height: 43px;
+  margin-top: 8px;
+  padding: 0 10px;
+  border-top: 1px solid #e9eef3;
+  border-radius: 7px;
+  color: #465a70;
+  font: 500 13px 'Noto Sans SC', system-ui, sans-serif;
+}
+
+.public-header .nav-account-popover > button:hover {
+  background: #f2f8fd;
+  color: #258fce;
+}
+
+.public-header .nav-account-popover > button:hover .nav-account-chevron,
+.public-header .nav-account-actions > a:hover .nav-account-chevron {
+  color: #258fce;
+}
+
+.public-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  min-width: 0;
+  padding: 0 6px 0 18px;
+  border: 1px solid #d6dde6;
+  border-radius: 24px;
+  background: #f5f7fa;
+  color: #7e8c9a;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.public-search:focus-within {
+  border-color: #9fc7e8;
+  background: #fff;
+  box-shadow: 0 5px 14px rgba(55, 126, 184, .12);
+}
+
+.public-search .public-nav-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.public-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #334155;
+  font: 14px 'Noto Sans SC', system-ui, sans-serif;
+}
+
+.public-search input::placeholder {
+  color: #94a0ad;
+}
+
+.public-search button {
+  width: 78px;
+  height: 32px;
+  flex: none;
+  border: 1px solid #9bc8ea;
+  border-radius: 17px;
+  background: #eaf5fd;
+  color: #347fb9;
+  font: 600 13px 'Noto Sans SC', system-ui, sans-serif;
+  cursor: pointer;
+  transition: background .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.public-search button:hover {
+  border-color: #8abfe6;
+  background: #dceffd;
+  box-shadow: 0 3px 8px rgba(55, 126, 184, .16);
+}
+
+.public-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.public-account {
+  height: 70px;
+}
+
+.public-action,
+.public-login {
+  display: grid;
+  min-width: 42px;
+  min-height: 48px;
+  place-items: center;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: #4f5d6c;
+  font: 700 12px 'Noto Sans SC', system-ui, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.public-action .public-nav-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.public-action:hover,
+.public-action.active,
+.public-login:hover {
+  color: #258fce;
+}
+
+.public-creator {
+  display: flex;
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 8px;
+  background: #ff6699;
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.public-creator:hover {
+  background: #f2558b;
+  color: #fff;
+}
+
+.public-tip {
+  position: absolute;
+  top: 60px;
+  right: max(24px, calc((100% - 1420px) / 2));
+  padding: 9px 12px;
+  border: 1px solid #d9e5ef;
+  border-radius: 8px;
+  background: #fff;
+  color: #526171;
+  font-size: 13px;
+  box-shadow: 0 12px 30px rgba(35, 55, 75, .14);
+}
+
+@media (max-width: 1160px) {
+  .public-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+  }
+
+  .public-nav {
+    grid-column: 1 / -1;
+    order: 3;
+    justify-content: center;
+    gap: 26px;
+  }
+
+  .public-nav a {
+    min-height: 48px;
+  }
+
+  .public-search {
+    max-width: none;
+  }
+
+  .public-actions {
+    gap: 6px;
+  }
+
+  .public-action span {
+    display: none;
+  }
+
+  .public-creator span {
+    display: inline;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-header {
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .public-brand {
+    width: 96px;
+    height: 36px;
+  }
+
+  .public-search {
+    grid-column: 1 / -1;
+    order: 4;
+    height: 46px;
+    padding-left: 14px;
+  }
+
+  .public-search button {
+    width: 70px;
+    height: 30px;
+  }
+
+  .public-nav {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 18px;
+  }
+
+  .public-nav a {
+    flex: none;
+    font-size: 13px;
+  }
+
+  .public-actions {
+    gap: 4px;
+  }
+
+  .public-login {
+    min-width: 36px;
+  }
+
+  .public-creator {
+    padding: 0 10px;
+  }
+
+  .public-creator span {
+    display: none;
+  }
+
+  .public-tip {
+    top: 58px;
+    right: 14px;
+  }
+
+  .public-account {
+    height: 48px;
+  }
+}

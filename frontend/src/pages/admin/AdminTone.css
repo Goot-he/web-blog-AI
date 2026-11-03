@@ -1,0 +1,382 @@
+/* Blue-white tone shared by creator center and admin center, aligned with the personal center. */
+:root {
+  --admin-ink: #20232a;
+  --admin-muted: #6a7280;
+  --admin-line: #e8ebf1;
+  --admin-paper: #fff;
+  --admin-bg: #f5f6f8;
+  --admin-accent: #12a9e8;
+  --admin-blue: #258fce;
+}
+
+.admin-page {
+  background: var(--admin-bg);
+  font-family: 'Noto Sans SC', Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.admin-sidebar {
+  border-right-color: #e2e8f0;
+  background: #fff;
+}
+
+.admin-brand {
+  border-bottom-color: #e8ebf1;
+}
+
+.admin-brand-mark {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #32b8ff, #8bd2ee);
+  box-shadow: 0 8px 18px rgba(18, 169, 232, .18);
+}
+
+.admin-brand b {
+  color: #20232a;
+  font-size: 16px;
+}
+
+.admin-brand small {
+  color: #718096;
+}
+
+.admin-menu button {
+  border-radius: 8px;
+  color: #59616d;
+  font-weight: 650;
+}
+
+.admin-menu button:hover {
+  background: #f3f8fc;
+  color: #168acb;
+}
+
+.admin-menu button.active {
+  background: #eef9fe;
+  color: #128ec5;
+  font-weight: 800;
+}
+
+.menu-icon,
+.active .menu-icon {
+  color: currentColor;
+}
+
+.admin-menu-heading {
+  color: #303640 !important;
+}
+
+.admin-menu-items {
+  border-left-color: #dfe7ef;
+}
+
+.admin-sidebar-footer {
+  border-top-color: #e8ebf1;
+}
+
+.footer-line {
+  color: #4c9b68;
+}
+
+.crumb {
+  color: #8f98a5;
+}
+
+.crumb b {
+  color: #c8d1dc;
+}
+
+.admin-top-title h1,
+.admin-card h2,
+.panel-heading h3,
+.knowledge-header h2,
+.articles-head h2,
+.editor-title-row h2,
+.aside-heading h3,
+.details-intro h3,
+.crop-modal header h3 {
+  color: #20232a;
+  font-family: 'Noto Sans SC', Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.admin-avatar {
+  background: #e8f3fb;
+  color: #3378ac;
+}
+
+.admin-return,
+.articles-refresh,
+.image-insert,
+.crop-cancel {
+  border-color: #dfe7ef;
+  background: #fff;
+  color: #59616d;
+}
+
+.admin-return:hover,
+.articles-refresh:hover,
+.image-insert:hover,
+.crop-cancel:hover {
+  border-color: #8ebbd8;
+  background: #edf8ff;
+  color: #2679af;
+}
+
+.admin-logout:hover,
+.text-action,
+.articles-reset:hover,
+.toc-panel button:hover {
+  color: #128ec5;
+}
+
+.primary-button,
+.publish-button,
+.crop-confirm {
+  background: #12a9e8;
+  color: #fff;
+}
+
+.primary-button:hover,
+.publish-button:hover,
+.crop-confirm:hover {
+  border-color: #0c92cb;
+  background: #0c92cb;
+}
+
+.admin-card,
+.content-panel,
+.stat-card,
+.quick-action,
+.knowledge-card,
+.knowledge-state,
+.article-row,
+.editor-canvas,
+.toc-panel,
+.article-images-panel {
+  border-color: #e8ebf1;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(34, 55, 74, .04);
+}
+
+.quick-action:hover,
+.knowledge-card:hover,
+.article-row:hover {
+  border-color: #b8dff5;
+  box-shadow: 0 12px 26px rgba(18, 169, 232, .08);
+}
+
+.quick-action > span,
+.knowledge-icon {
+  border-color: #d7ecf8;
+  background: #eef9fe;
+  color: #168acb;
+}
+
+.quick-action.primary,
+.articles-message,
+.editor-notice {
+  border-color: #b8dff5;
+  background: #f3fbff;
+  color: #2679af;
+}
+
+.welcome-panel {
+  background: linear-gradient(135deg, #168acb, #56bce8);
+}
+
+.welcome-panel p {
+  color: rgba(255, 255, 255, .82);
+}
+
+.welcome-orbit span {
+  background: #fff;
+  color: #168acb;
+}
+
+.articles-head p,
+.article-info p,
+.details-intro p,
+.article-metrics small,
+.article-images-panel > p,
+.toc-panel > p,
+.editor-status {
+  color: #6a7280;
+}
+
+.article-cover,
+.compact-cover,
+.content-images-panel,
+.article-images-panel article,
+.crop-preview,
+.zoom-controls > div {
+  border-color: #dfe7ef;
+  background: #eef3f8;
+  color: #8e98a5;
+}
+
+.article-info h3 {
+  color: #20232a;
+  font: 800 17px 'Noto Sans SC', Inter, system-ui, sans-serif;
+}
+
+.article-info div,
+.article-meta .article-views {
+  color: #8f98a5;
+}
+
+.article-delete {
+  color: #5784a6;
+}
+
+.article-delete:hover {
+  color: #168acb;
+}
+
+.articles-empty {
+  border-color: #dfe7ef;
+  background: #fff;
+  color: #8f98a5;
+}
+
+.articles-empty strong {
+  color: #303640;
+  font: 800 18px 'Noto Sans SC', Inter, system-ui, sans-serif;
+}
+
+.editor-title-row span,
+.aside-heading > span,
+.details-intro > span,
+.crop-modal header span {
+  color: #8f98a5;
+}
+
+.editor-status i {
+  background: #12a9e8;
+}
+
+.editor-field > span,
+.field-label > span,
+.detail-category > span,
+.details-label,
+.category-select > span,
+.category-selects label > span {
+  color: #59616d;
+}
+
+.editor-field input,
+.editor-field textarea,
+.detail-category select,
+.details-control textarea,
+.details-control select,
+.category-select > button,
+.category-selects select,
+.category-trigger,
+.articles-filters input,
+.articles-filters select,
+.category-picker-trigger {
+  border-color: #dfe7ef;
+  border-radius: 7px;
+  color: #20232a;
+}
+
+.editor-field input:focus,
+.editor-field textarea:focus,
+.detail-category select:focus,
+.details-control textarea:focus,
+.details-control select:focus,
+.category-select > button:hover,
+.category-select > button:focus,
+.category-selects select:focus,
+.category-trigger:hover,
+.category-trigger:focus,
+.articles-filters input:focus,
+.articles-filters select:focus,
+.category-picker-trigger:hover,
+.category-picker-trigger:focus-visible,
+.ai-settings-grid input:focus,
+.ai-settings-grid select:focus {
+  border-color: #8ebbd8;
+  box-shadow: 0 0 0 3px rgba(18, 169, 232, .12);
+}
+
+.markdown-editor {
+  border-color: #dfe7ef;
+  border-radius: 8px;
+}
+
+.editor-toolbar {
+  border-bottom-color: #e8ebf1;
+  background: #f7fbff;
+}
+
+.mode-switch {
+  background: #eaf4fb;
+}
+
+.mode-switch button {
+  color: #5f7182;
+}
+
+.mode-switch button.active,
+.compact-cover > div b,
+.compact-cover > div span {
+  color: #168acb;
+}
+
+.article-details,
+.editor-split .markdown-input,
+.crop-modal header,
+.crop-modal footer,
+.toc-panel button {
+  border-color: #e8ebf1;
+}
+
+.compact-cover:hover {
+  border-color: #8ebbd8;
+  background: #f7fcff;
+}
+
+.compact-cover em {
+  background: #168acb;
+}
+
+.category-picker-menu,
+.category-select-menu,
+.category-options {
+  border-color: #dfe7ef;
+  box-shadow: 0 12px 28px rgba(34, 55, 74, .12);
+}
+
+.category-picker-menu button:hover,
+.category-select-menu button:hover,
+.category-options button:hover {
+  border-color: #b8dff5;
+  background: #f3fbff;
+  color: #168acb;
+}
+
+.category-picker-menu button.selected,
+.category-select-menu button.selected,
+.category-options button.selected {
+  border-color: #b8dff5;
+  background: #eef9fe;
+  color: #128ec5;
+}
+
+.crop-modal {
+  border-color: #dfe7ef;
+}
+
+.crop-modal header > button {
+  background: #f3f8fc;
+  color: #59616d;
+}
+
+.zoom-controls button {
+  color: #59616d;
+}
+
+.zoom-controls button:hover:not(:disabled) {
+  background: #edf8ff;
+  color: #2679af;
+}

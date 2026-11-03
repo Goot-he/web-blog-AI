@@ -1,0 +1,20 @@
+.assistant-sidebar{position:relative;transition:padding .2s ease}
+.assistant-sidebar-toggle{position:absolute;z-index:2;top:26px;right:-15px;display:grid;width:30px;height:30px;place-items:center;border:1px solid #d8e8f2;border-radius:50%;background:#fff;color:#5b87a5;font-size:22px;line-height:1;box-shadow:0 3px 10px rgba(38,95,134,.12);cursor:pointer;transition:color .18s ease,border-color .18s ease,background .18s ease}
+.assistant-sidebar-toggle:hover{border-color:#8ecbf0;background:#effaff;color:#1687c5}
+.assistant-workspace{transition:grid-template-columns .22s ease}
+.assistant-workspace.sidebar-collapsed{grid-template-columns:72px minmax(0,1fr)}
+.sidebar-collapsed .assistant-sidebar{align-items:center;padding:20px 10px 16px}
+.sidebar-collapsed .assistant-side-brand{padding:4px 0 25px}
+.sidebar-collapsed .assistant-side-brand>div,.sidebar-collapsed .assistant-session-label,.sidebar-collapsed .assistant-session-list,.sidebar-collapsed .assistant-side-foot{display:none}
+.sidebar-collapsed .assistant-new-chat{display:grid;width:42px;min-height:42px;place-items:center;padding:0;border-radius:10px;font-size:24px;line-height:1}
+.sidebar-collapsed .assistant-new-chat-label{display:none}
+.assistant-composer{margin-bottom:52px}
+.assistant-composer textarea{resize:none;overflow-y:auto}
+.assistant-session>button.assistant-session-select{display:grid;width:34px;height:39px;min-width:34px;flex:0 0 34px;place-items:center;padding:0;border:0;background:transparent;color:#86bfe2;cursor:pointer;text-align:center}
+.assistant-session>.assistant-session-title{min-width:0;flex:1;padding:10px 4px 10px 0;border:0;background:transparent;color:#617286;cursor:text;text-align:left}
+.assistant-session-title b{display:block;overflow:hidden;font-size:13px;font-weight:500;text-overflow:ellipsis;white-space:nowrap}
+.assistant-session.active .assistant-session-title b{color:#227fb9;font-weight:700}
+.assistant-session-title:hover b{text-decoration:underline;text-underline-offset:3px}
+.assistant-session-title-input{min-width:0;height:32px;flex:1;margin:3px 4px 3px 0;padding:0 8px;border:1px solid #65bbed;border-radius:6px;outline:0;background:#fff;color:#233a50;font:13px inherit}
+.assistant-session-title-input:focus{box-shadow:0 0 0 3px rgba(101,187,237,.18)}
+@media(max-width:760px){.assistant-sidebar-toggle{display:none}.assistant-workspace.sidebar-collapsed{grid-template-columns:1fr}.assistant-composer{margin-bottom:28px}}

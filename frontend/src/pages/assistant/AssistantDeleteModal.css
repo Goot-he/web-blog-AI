@@ -1,0 +1,11 @@
+.assistant-delete-modal{position:fixed;z-index:80;inset:0;display:grid;place-items:center;padding:24px;background:rgba(20,41,61,.24);backdrop-filter:blur(3px)}
+.assistant-delete-card{width:min(390px,100%);padding:29px;border:1px solid #dcebf5;border-radius:16px;background:#fff;box-shadow:0 24px 60px rgba(28,68,99,.22);text-align:center}
+.assistant-delete-icon{display:grid;width:42px;height:42px;margin:0 auto 15px;place-items:center;border-radius:50%;background:#fff0f1;color:#df4b5d;font-size:21px;font-weight:800}
+.assistant-delete-card h2{margin:0;color:#20354b;font-size:20px}
+.assistant-delete-card p{margin:10px 0 24px;color:#728497;font-size:14px;line-height:1.7}
+.assistant-delete-card>div:last-child{display:flex;justify-content:flex-end;gap:9px}
+.assistant-delete-card button{min-height:38px;padding:0 15px;border:1px solid #dce7ef;border-radius:8px;background:#fff;color:#587087;font:600 13px inherit;cursor:pointer}
+.assistant-delete-card button:hover:not(:disabled){border-color:#b9d2e3;background:#f5fbff}
+.assistant-delete-card .assistant-delete-confirm{border-color:#e95263;background:#e95263;color:#fff}
+.assistant-delete-card .assistant-delete-confirm:hover:not(:disabled){border-color:#d74153;background:#d74153}
+.assistant-delete-card button:disabled{cursor:not-allowed;opacity:.6}
